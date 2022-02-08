@@ -1,25 +1,40 @@
+<script>
+    import Comment from "./comment.svelte"
+    import CommentForm from "./commentForm.svelte"
+
+    export let comment = false
+
+    let descriptionComplet = false
+
+    const seeMore = () => {
+        descriptionComplet = !descriptionComplet
+    }
+</script>
 
 <article class="publication">
+    {#if comment}
+        <CommentForm />
+    {/if}
     <div class="publication-top">
-        <a href="/account/kevinmons">
+        <a href="/account/user">
             <div>
-                <img src="https://random.imagecdn.app/500/15">
+                <img src="https://random.imagecdn.app/150/150" alt="Profile user">
             </div>
             <p>therock</p>
         </a>
     </div>
     <div class="publication-slide">
-        <div class="publication-img">
+        <a href="/publication/id" class="publication-img">
             <div>
-                <img src="https://random.imagecdn.app/500/1500">
+                <img src="https://random.imagecdn.app/500/1500" alt="Publication">
             </div>
             <div>
-                <img src="https://random.imagecdn.app/1000/500">
+                <img src="https://random.imagecdn.app/1000/500" alt="Publication">
             </div>
             <div>
-                <img src="https://random.imagecdn.app/600/300">
+                <img src="https://random.imagecdn.app/600/300" alt="Publication">
             </div>
-        </div>
+        </a>
         <div class="publication-btn">
             <div class="publication-bubble active"></div>
             <div class="publication-bubble"></div>
@@ -40,20 +55,45 @@
         <div class="publication-likes">
             <p>562 Likes</p>
         </div>
-        <div class="publication-desc">
-            <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iure saepe non nesciunt unde. Repellat eos...</p>
-            <button>More</button>
+        <div class={comment ? "publication-desc publication-desc-comment" : "publication-desc"}>
+            {#if descriptionComplet || comment}
+                <p class={comment ? "desc-margin" : ""}>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error consectetur doloremque ipsa consequatur, cupiditate ex facilis incidunt eos corrupti, veniam amet blanditiis totam itaque quod magni aspernatur voluptatem ipsum tempore dolores quia odio fugit? Nostrum soluta officia illum eos iure quo magni optio eligendi ut. Repellat dolore nostrum magni est iusto reprehenderit porro harum neque, dolores eum iste molestiae sapiente! Distinctio eveniet nemo nesciunt delectus cum similique ipsa, aliquam eum ut natus, magni vero molestiae facilis, eaque quisquam explicabo! Aliquid magni quia perferendis earum labore qui, pariatur totam obcaecati nisi tempore ullam suscipit quod, iusto modi eveniet ad quo illum dolorem repellendus delectus praesentium! Quidem quod iusto labore asperiores eaque hic quae earum, distinctio amet accusantium iste suscipit, minus nulla explicabo aspernatur. Voluptatibus repudiandae laborum laudantium nemo porro consequatur dolorum asperiores odit in dolores inventore reprehenderit fuga, optio est itaque eos odio accusantium blanditiis dignissimos eveniet. Laboriosam labore maxime tempora?</p>
+            {:else}
+                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iure saepe non nesciunt unde. Repellat eos...</p>
+            {/if}
+            {#if comment}
+                <small>2 days ago</small>
+            {:else}
+                <button on:click={seeMore}>{descriptionComplet ? "Less" : "More"}</button>
+            {/if}
         </div>
-        <div class="publication-comment">
-            <button>Show the 4 comments</button>
+        <div class={comment ? "publication-comment publi-com-margin" : "publication-comment"}>
+            {#if comment}
+            <Comment />
+            <Comment />
+            <Comment />
+            <Comment />
+            <Comment />
+            <Comment />
+            <Comment />
+            <Comment />
+            <Comment />
+            <Comment />
+            <Comment />
+            <Comment />
+            <Comment />
+            {:else}
+                <a href="/publication/id">Show the 4 comments</a>
+            {/if}
         </div>
-        <small>2 days ago</small>
+        {#if !comment}
+            <small>2 days ago</small>
+        {/if}
     </div>
 </article>
 
 <style>
     .publication {
-        max-height: 150vh;
         padding: 20px 0;
     }
 
@@ -118,7 +158,7 @@
         justify-content: center;
         align-items: center;
         width: 100vw;
-        padding: 10px 0;
+        padding-top: 10px;
     }
 
     .publication-bubble {
@@ -147,25 +187,39 @@
         margin: 10px 0;
     }
 
+    .publication-desc-comment {
+        border-bottom: 1px solid #A8A8A8;
+        padding: 20px;
+        margin: 0 -20px;
+    }
+
     .publication-likes p, .publication-desc p {
         color: #262626;
         font-size: 1.4rem;
     }
 
-
-    .publication-desc button, .publication-comment button  {
+    .publication-desc button, .publication-comment a  {
         color: #A8A8A8;
         font-size: 1.4rem;
+        cursor: pointer;
     }
 
-    .publication-comment button {
-        margin: 10px 0;
+    .publication-comment {
+        margin-bottom: 10px;
+    }
+
+    .publi-com-margin {
+        margin-bottom: 62px;
     }
 
     .publication small {
         color: #8e8e8e;
         font-size: 1rem;
         text-transform: uppercase;
+    }
+
+    .desc-margin {
+        margin-bottom: 20px;
     }
 
 </style>

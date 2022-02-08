@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-	<title>Sapper project template</title>
+	<title>Home</title>
 </svelte:head>
 
 <Storys />

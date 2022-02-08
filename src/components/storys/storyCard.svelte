@@ -11,7 +11,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin: 20px 20px 20px 0;
+        margin: 10px 20px 20px 0;
     }
 
     .story-img {
