@@ -5,10 +5,19 @@
 	font-size: 62.5%; /* Ré-équilibrage du Rem face au Pixel pour des calculs simples */
 }
 
-p, a, small, span, input, h1, h2 {
+p, a, small, span, input, label, button, h1, h2 {
 	font-family: "Roboto", sans-serif;
 }
 
 a {
 	text-decoration: none;
+}
+
+.error-txt {
+	font-size: 1.4rem;
+	color: #ED4956;
+}
+
+.error-input {
+	border: 1px solid #ED4956!important;
 }

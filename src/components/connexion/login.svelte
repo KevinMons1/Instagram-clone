@@ -29,16 +29,15 @@
         height: 100vh;
         padding: 20px;
     }
-
     .connexion-flex {
         display: flex;
         justify-content: center;
         align-items: center;
         flex-direction: column;
     }
-    
     .connexion-box {
         padding: 40px;
+        margin: 10px 0;
         width: 350px;
     }
 
@@ -67,6 +66,8 @@
         margin-top: 10px;
         font-size: 1.4rem;
         background-color: #0095f6;
+        border: none;
+        border-radius: 3px;
         color: #fff;
         opacity: 0.5;
     }
@@ -77,8 +78,16 @@
         align-items: center;
     }
 
-    .connexion-redirect p button {
+    .connexion-redirect p, .connexion-redirect button {
         font-size: 1.4rem;
+    }
+
+    .connexion-redirect button {
+        margin-left: 5px;
+        background: none;
+        border: none;
+        color: #0095f6;
+        cursor: pointer;
     }
 
     @media screen and (min-width: 426px) {

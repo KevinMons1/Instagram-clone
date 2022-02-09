@@ -8,12 +8,12 @@
 
 	let newPublication = false
 	let isAuth = false
-	let isLogin = true
+	let isLogin = false
 
 	const changeNewPublication = () => {
 		newPublication = !newPublication
 	}
-
+	
 	const changeLoginPage = () => {
 		isLogin = !isLogin
 	}
