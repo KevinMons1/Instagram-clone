@@ -1,10 +1,11 @@
 <script>
     import { createEventDispatcher } from "svelte"
+    export let birthday
     
     const dispatch = createEventDispatcher()
     let error = ""
     let data = {
-        birthday: ""
+        birthday: birthday
     }
     let disabled = true
 
@@ -36,11 +37,11 @@
 </script>
 
 <label for="birthday">Your birthday</label>
-<input class={error !== "" ? "error-input" : ""} type="date" bind:value={data.birthday} id="birthday">
+<input class={error !== "" ? "error-input" : ""} type="date" name="birthday" bind:value={data.birthday} id="birthday">
 {#if error !== ""}
     <small class="error-txt">{error}</small>
 {/if}
-<button disabled={disabled} class={disabled ? "disabled" : ""} on:click={nextStep}>Next</button>
+<button disabled={disabled} class={disabled ? "disabled" : ""} type="submit" on:click={nextStep}>Next</button>
 
 <style>
     input {

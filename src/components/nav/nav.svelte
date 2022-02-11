@@ -1,7 +1,10 @@
 <script>
 	import { createEventDispatcher, onMount } from "svelte"
+	import storeAuth from "../../store/auth"
 
 	let active
+	let uid
+	let src
 	const dispatch = createEventDispatcher();
 
 	const newPublication = () => {
@@ -13,6 +16,11 @@
 	}
 
 	onMount(() => {
+		storeAuth.subscribe(value => {
+			uid = value.uid
+			src = value.imgPath
+		})
+		
 		changePathname(window.location.pathname)
 	})
 
@@ -61,8 +69,8 @@
 				</button>
 			</li>
 			<li>
-				<a href="/account/user" on:click={() => changePathname("/account")} class="navbar-img">
-					<img src="https://random.imagecdn.app/100/100" alt="My Account">
+				<a href={`/account/${uid}`} on:click={() => changePathname("/account")} class="navbar-img">
+					<img src={src !== "" ? src : "images/default-user.jpg"} alt="My Account">
 				</a>
 			</li>
 		</ul>

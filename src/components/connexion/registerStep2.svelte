@@ -1,12 +1,14 @@
 <script>
     import { createEventDispatcher } from "svelte"
+    export let name
+    export let password
     
     const dispatch = createEventDispatcher()
     let error = ""
     let errorNbr = 0
     let data = {
-        name: "",
-        password: ""
+        name: name,
+        password: password
     }
     let disabled = true
 
@@ -31,12 +33,12 @@
 
 </script>
 
-<input class={errorNbr === 1 ? "error-input" : ""} type="text" bind:value={data.name} placeholder="Name complet">
-<input class={errorNbr === 2 ? "error-input" : ""} type="password" bind:value={data.password} placeholder="Password">
+<input class={errorNbr === 1 ? "error-input" : ""} type="text" name="name" bind:value={data.name} placeholder="Name complet">
+<input class={errorNbr === 2 ? "error-input" : ""} type="password" name="password" bind:value={data.password} placeholder="Password">
 {#if error !== ""}
     <small class="error-txt">{error}</small>
 {/if}
-<button disabled={disabled} class={disabled ? "disabled" : ""} on:click={nextStep}>Next</button>
+<button disabled={disabled} class={disabled ? "disabled" : ""} type="button" on:click={nextStep}>Next</button>
 
 <style>
     input {

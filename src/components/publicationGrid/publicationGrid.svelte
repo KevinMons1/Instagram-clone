@@ -33,15 +33,18 @@
 
 <style>
     .publicationGrid {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(50px, 1fr));
+        grid-gap: 5px;
+    }
+
+    .publicationGrid a {
+        aspect-ratio: 1;
     }
 
     .publicationGrid img {
-        width: 32.9vw;
-        height: 32.9vw;
+        width: 100%;
+        height: 100%;
         object-fit: cover;
     }
 </style>

@@ -1,19 +1,36 @@
-<div class="account-informations">
+<script>
+    import { goto } from "@sapper/app"
+    export let isUser
+    export let data
+
+</script>
+
+<svelte:head>
+	<title>{data.name}</title>
+</svelte:head>
+
+<header class="account-informations">
     <div class="ai-top">
         <div class="ai-img">
-            <img src="https://random.imagecdn.app/500/500" alt="Profile">
+            <img src={data.imgPath === "" ? "images/default-user.jpg" : data.imgPath} alt="Profile">
         </div>
         <div class="ai-top-right">
-            <h1>kevin.monsieur</h1>
-            <div class="ai-action">
-                <button>Contact</button>
-                <button>Add friend</button>
-            </div>
+            <h1>{data.username}</h1>
+            {#if isUser === true}
+                <div class="ai-action">
+                    <button on:click={() => goto("/account/edit")}>Modify profile</button>
+                </div>
+            {:else if isUser === false}
+                <div class="ai-action">
+                    <button>Contact</button>
+                    <button>Follow</button>
+                </div>
+            {/if}
         </div>
     </div>
     <div class="ai-bio">
-        <p>Kevin Monsieu</p>
-        <h2>I have a dream</h2>
+        <p>{data.name}</p>
+        <h2>{data.description}</h2>
     </div>
     <div class="ai-social">
         <div>
@@ -29,7 +46,7 @@
             <p>subscriptions</p>
         </div>
     </div>
-</div>
+</header>
 
 <style>
     .account-informations {
