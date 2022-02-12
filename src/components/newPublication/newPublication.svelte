@@ -6,11 +6,9 @@
     let step = 1
     let error = ""
     let files
-    let src
     let arrFiles = []
-    let reader = new FileReader()
 
-    $: files !== null ? handleFile() : null
+    $: files && files[0] ? handleFile() : null
 
     const dispatch = createEventDispatcher();
 
@@ -27,11 +25,10 @@
             if (file.type.includes("image/")) {
                 if (file.type.includes("/jpg") || file.type.includes("/jpeg") || file.type.includes("/png") || file.type.includes("/gif")) {
                     if (file.size <= 1000000) { // 1mb
-                        arrFiles.push(file)
-                        reader.readAsDataURL(file) // display image
-                    } error = "Your image is too heavy. It must be less of 1Mb."
-                } error = "Bad format. Use only jpg, jpeg, png or gif."
-            } error = "It is not a image or video."
+                        arrFiles = [...arrFiles, file]
+                    } else error = "Your image is too heavy. It must be less of 1Mb."
+                } else error = "Bad format. Use only jpg, jpeg, png or gif."
+            } else error = "It is not a image or video."
         }
     }
 
@@ -42,10 +39,6 @@
         else if (action === 1) {
             if (step === 1) closePublication()
         }
-    }
-
-    reader.onload = () => {
-        src = reader.result
     }
 
 </script>
@@ -60,8 +53,8 @@
         <button class="next" on:click={() => changeStep(1)}>Next</button>
    </div>
     <div class="newP-content">
-        {#if src} 
-            <Slider src={src} arrFiles={arrFiles} />
+        {#if arrFiles.length > 0} 
+            <Slider {arrFiles} />
             {:else}
                 {#if error !== ""}
                     <svg aria-label="Icône pour représenter le contenu multimédia, comme les images ou les vidéos" class="_8-yf5 " color="#262626" fill="#262626" height="96" role="img" viewBox="0 0 96 96" width="96"><path d="M48 0c26.5 0 48 21.5 48 48S74.5 96 48 96 0 74.5 0 48 21.5 0 48 0zm0 2C22.6 2 2 22.6 2 48s20.6 46 46 46 46-20.6 46-46S73.4 2 48 2zm0 57.8c3.4 0 6.1 2.7 6.1 6.1 0 3.4-2.7 6.1-6.1 6.1s-6.1-2.7-6.1-6.1c0-3.3 2.7-6.1 6.1-6.1zm0 2c-2.3 0-4.1 1.8-4.1 4.1S45.7 70 48 70s4.1-1.8 4.1-4.1c0-2.2-1.8-4.1-4.1-4.1zM48 23c3.5 0 6.4 2.8 6.1 6.2l-1.6 22.5c-.2 2.3-2.2 4-4.5 4-2.4 0-4.4-1.7-4.5-4l-1.6-22.5c-.3-3.4 2.6-6.2 6.1-6.2zm0 2c-2.4 0-4.3 1.9-4.1 4l1.6 22.5c.1 1.2 1.2 2.1 2.5 2.1s2.4-.9 2.5-2.1L52.1 29c.2-2.1-1.7-4-4.1-4z"></path></svg>
@@ -102,8 +95,8 @@
         border-radius: 20px;
         background-color: #fff;
         transform: translate(-50%, -50%);
-        z-index: 21;
         overflow: hidden;
+        z-index: 21;
     }
 
     .newPublication-head {
@@ -140,7 +133,6 @@
         flex-direction: column;
         width: 100%;
         height: 100%;
-        overflow: hidden;
     }
 
     .newP-content p {

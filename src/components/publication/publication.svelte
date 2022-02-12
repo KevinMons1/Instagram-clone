@@ -95,6 +95,7 @@
 <style>
     .publication {
         padding: 20px 0;
+        width: 100%;
     }
 
     .publication button {
@@ -135,14 +136,14 @@
     }
 
     /* Image */
-
+    
     .publication-img {
         display: flex;  
-        overflow-y: scroll;
+        overflow-x: scroll;
     }
 
     .publication-img div {
-        min-width: 100vw;
+        min-width: 100%;
         max-height: 90vh;
         min-height: 250px;
     }
@@ -157,7 +158,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 100vw;
         padding-top: 10px;
     }
 

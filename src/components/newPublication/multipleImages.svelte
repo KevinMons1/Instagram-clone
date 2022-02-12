@@ -1,28 +1,15 @@
 <script>
-    export let arrFiles
-
-    let open = false
-    let reader = new FileReader()
-    let srcs = []
+    import { v4 as uuid } from "uuid"
     
-    $: displayFiles()
-
-    const displayFiles = () => {
-        arrFiles.forEach(file => {
-            reader.readAsDataURL(file)
-        })
-    }
-
-    reader.onload = () => {
-        srcs.push(reader.result)
-    }
+    export let srcs
+    let open = false
 </script>
 
 {#if open}
     <div class="multiple-content">
         <div class="multiple-bg"></div>
         <div class="multiple-box">
-            {#each srcs as src}
+            {#each srcs as src (uuid())}
                 <div>
                     <img src={src} alt="Future publication">
                 </div>
@@ -49,9 +36,9 @@
         height: 32px;
         border-radius: 50%;
         background-color: #474747;
-        z-index: 20;
         transition: 0.2s;
         cursor: pointer;
+        z-index: 50;
     }
 
     .multiple:hover {
@@ -66,6 +53,7 @@
         justify-content: center;
         align-items: center;
         overflow: hidden;
+        z-index: 50;
     }
 
     .multiple-bg {

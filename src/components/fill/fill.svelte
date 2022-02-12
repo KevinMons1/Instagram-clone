@@ -16,5 +16,6 @@
 <style>
     .fill {
         width: 100%;
+        overflow-x: hidden;
     }
 </style>
