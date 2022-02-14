@@ -1,16 +1,16 @@
 <script>
+    import { createEventDispatcher } from "svelte"
     import MultipleImages from "./multipleImages.svelte"
-    import { v4 as uuid } from "uuid"
 
     export let arrFiles
     
+    const dispatch = createEventDispatcher()
     let srcs = []
     let slideIndex = 0
-
+    
     $: if (arrFiles.length > 0) displayFiles()
-
+    
     const displayFiles = () => {
-        console.log(arrFiles);
         // For multiple reader listen blob, we must created reader in the loop
         for (let i = srcs.length; i < arrFiles.length; i++) {
             let reader = new FileReader()
@@ -21,27 +21,37 @@
         }
     }
 
+    const slideIndexEvent = (e) => {
+        slideIndex = e.detail
+    }
+
+    const handleChange = () => {
+        dispatch("new-img")
+    }
+
+    const handleDelete = (e) => {
+        srcs = srcs.filter((src, index) => index !== e.detail)
+        dispatch("delete-img", e.detail)
+    }
 
 </script>
 
 <div class="slider">
-    {#if srcs.length > 1 && slideIndex > 1} 
-        <button name="imageLeft" class="btn-left" on:click={slideIndex = slideIndex + 1}>
-            <svg color="#ffffff" fill="#ffffff" height="16" role="img" viewBox="0 0 24 24" width="16"><polyline fill="none" points="16.502 3 7.498 12 16.502 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline></svg>
+    {#if srcs.length > 1 && slideIndex > 0} 
+        <button name="imageLeft" class="btn-left" on:click={() => slideIndex--}>
+            <svg aria-label="previus image" color="#ffffff" fill="#ffffff" height="16" role="img" viewBox="0 0 24 24" width="16"><polyline fill="none" points="16.502 3 7.498 12 16.502 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline></svg>
         </button>
-        {/if}
-        {#each srcs as src (uuid())}
-        <div>
-            <img src={src} alt="Future publication">
-        </div>
-        {/each}
-        {#if srcs.length > 1 && slideIndex < srcs.length - 1} 
-        <button name="imageRight" class="btn-right" on:click={slideIndex = slideIndex - 1}>
-            <svg color="#ffffff" fill="#ffffff" height="16" role="img" viewBox="0 0 24 24" width="16"><polyline fill="none" points="8 3 17.004 12 8 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline></svg>
+    {/if}
+    <div>
+        <img src={srcs[slideIndex]} alt="Future publication">
+    </div>
+    {#if srcs.length > 1 && slideIndex < srcs.length - 1} 
+        <button name="imageRight" class="btn-right" on:click={() => slideIndex++}>
+            <svg aria-label="next image" color="#ffffff" fill="#ffffff" height="16" role="img" viewBox="0 0 24 24" width="16"><polyline fill="none" points="8 3 17.004 12 8 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline></svg>
         </button>
     {/if}
 </div>
-<MultipleImages {srcs} />
+<MultipleImages on:delete-img={handleDelete} on:new-img={handleChange} on:slide-index={slideIndexEvent} srcs={srcs} />
 
 <style>
 
@@ -53,7 +63,7 @@
     }
 
     div {
-        width: 100%;
+        min-width: 100%;
         height: 100%;
     }
 
