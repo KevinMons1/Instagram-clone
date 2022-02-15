@@ -18,6 +18,33 @@ export const getCurrentUser = async (uid) => {
 }
 
 // ---- POST ----
+export const addUser = async (uid, email, name, username, birthday) => {
+    try {
+        await setDoc(doc(db, "users", uid), {
+            email: email,
+            username: username,
+            name: name,
+            birthday: birthday,
+            publications: 0,
+            subscribers: 0,
+            subscriptions: 0,
+            description: "",
+            imgPath: "",
+            imgName: ""
+        })
+        return {
+            step: 4,
+            loading: false 
+        }   
+    } catch(err) {
+        alert("Error from server... Try later.")
+        return {
+            step: 1,
+            loading: false 
+        }         
+    }
+}
+
 export const addStorageProfile = async (ref, file, imgName, dataUser) => {
     let newRef = ref + uuid()
     let isDelete = false

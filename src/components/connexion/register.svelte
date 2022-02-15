@@ -1,7 +1,6 @@
 <script>
     import { createEventDispatcher } from "svelte"
-    import { db } from "../../firebase/firebase-config"
-    import { doc, setDoc } from "firebase/firestore"
+    import { addUser } from "../../firebase/function";
     import storeAuth from "../../store/auth"
     import Loader from "../loader/loader.svelte"
     import RegisterStep1 from "./registerStep1.svelte";
@@ -28,24 +27,7 @@
         if (step === 3) {
             storeAuth.signUp(email, password)
                 .then(res => {
-                    setDoc(doc(db, "users", res.user.uid), {
-                        email: email,
-                        username: username,
-                        name: name,
-                        birthday: birthday,
-                        description: "",
-                        imgPath: "",
-                        imgName: ""
-                    })
-                        .then(() => {
-                            step = 4
-                            loading = false    
-                        })
-                        .catch(() => {
-                            alert("Error from server... Try later.")
-                            step = 1
-                            loading = false    
-                        })
+                    addUser(res.user.uid, email, name, username, birthday)
                 })
                 .catch(err => {
                     if (err.code === "auth/email-already-in-use") {
