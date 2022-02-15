@@ -69,7 +69,7 @@
             let response = await addNewPublication(data.text, uid, arrFiles)
 
             if (!response) error = "Error server..."
-            window.location.reload()
+            location.reload()
         }
     }
 

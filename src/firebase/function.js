@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from "firebase/firestore"
+import { doc, getDoc, setDoc, getDocs, query, collection, where, limit } from "firebase/firestore"
 import { ref as sRef, uploadBytes, deleteObject, getDownloadURL   } from "firebase/storage"
 import { db, storage } from "./firebase-config"
 import { v4 as uuid } from "uuid"
@@ -11,8 +11,53 @@ export const getCurrentUser = async (uid) => {
     let data = {}
 
     if (docSnap.exists()) {
-        data = docSnap.data()
+        data = await docSnap.data()
     } 
+
+    return data
+}
+
+export const getFillAccount = async (uid) => {
+    const collectionRef = await collection(db, "publications")
+    const queryUid = await query(collectionRef, where("uid", "==", uid))
+    let data = []
+
+    const querySnapshot = await getDocs(queryUid)
+
+    querySnapshot.forEach(item => {
+        data.push({
+            ...item.data(),
+            id: item.id
+        })
+    })
+
+    return data
+}
+
+export const getFillAll = async (limitNbr) => {
+    const collectionRef = await collection(db, "publications")
+    const queryUid = await query(collectionRef, limit(limitNbr))
+    let data = []
+
+    const querySnapshot = await getDocs(queryUid)
+    
+    // Data publication
+    querySnapshot.forEach(item => {
+        const itemData = item.data()
+        data.push({
+            ...itemData,
+            id: item.id
+        })
+    })
+
+    // Data user
+    for (let i = 0; i < data.length; i++) {
+        const userData = await getCurrentUser(data[i].uid)
+        data[i] = {
+            publication: data[i],
+            user: userData
+        }
+    }
 
     return data
 }
@@ -112,9 +157,18 @@ export const addNewPublication = async (text, uid, arrFiles) => {
             comments: 0,
             likes: 0,
             text: text,
-            data: date,
-            userId: uid,
+            date: date,
+            uid: uid,
             files: arrPath
+        })
+
+        // Update user
+        const userData = await getCurrentUser(uid)
+        const publications = userData.publications + 1
+        await updateUser({
+            ...userData,
+            uid: uid,
+            publications: publications
         })
 
         return true

@@ -1,34 +1,19 @@
+<script>
+    export let data
+</script>
+
 <div class="publicationGrid">
-    <a href="/publication/id"><img src="https://random.imagecdn.app/1000/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/600/1000" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/800/800" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/800/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/600/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/600" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/800/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/1000" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/600" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/1000/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
-    <a href="/publication/id"><img src="https://random.imagecdn.app/500/500" alt="publication"></a>
+    {#each data as item (item.id)}
+        <a href={`publication/${item.id}`}>
+            {#if item.files[0].items[0].filePath.includes("/o/images%")}
+                <img src={item.files[0].items[0].filePath} alt="publication">
+            {:else}
+                <video muted>
+                    <source src={item.files[0].items[0].filePath}>
+                </video>
+            {/if}
+        </a>
+    {/each}
 </div>
 
 <style>
@@ -42,7 +27,7 @@
         aspect-ratio: 1;
     }
 
-    .publicationGrid img {
+    .publicationGrid img, .publicationGrid video {
         width: 100%;
         height: 100%;
         object-fit: cover;

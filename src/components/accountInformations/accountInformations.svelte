@@ -1,8 +1,8 @@
 <script>
     import { goto } from "@sapper/app"
+    
     export let isUser
     export let data
-
 </script>
 
 <svelte:head>
@@ -34,15 +34,15 @@
     </div>
     <div class="ai-social">
         <div>
-            <span>53</span>
+            <span>{data.publications}</span>
             <p>publications</p>
         </div>
         <div>
-            <span>211</span>
+            <span>{data.subscribers}</span>
             <p>subscribers</p>
         </div>
         <div>
-            <span>739</span>
+            <span>{data.subscriptions}</span>
             <p>subscriptions</p>
         </div>
     </div>

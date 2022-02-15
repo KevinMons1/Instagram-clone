@@ -1,16 +1,13 @@
 <script>
     import Publication from "../publication/publication.svelte"
+
+    export let data
 </script>
 
 <div class="fill">
-    <Publication />
-    <Publication />
-    <Publication />
-    <Publication />
-    <Publication />
-    <Publication />
-    <Publication />
-    <Publication />
+    {#each data as item (item.id)}
+        <Publication data={item} />
+    {/each}
 </div>
 
 <style>

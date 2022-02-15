@@ -12,16 +12,23 @@
     import PublicationGrid from "../../components/publicationGrid/publicationGrid.svelte"
     import Loader from "../../components/loader/loader.svelte"
     import storeAuth from "../../store/auth"
-    import { getCurrentUser } from "../../firebase/function"
+    import { getCurrentUser, getFillAccount } from "../../firebase/function"
 
     export let accountUid;
     let loading = true
     let isUser = null
-    let data = {}
+    let data = {
+        user: {},
+        fill: {}
+    }
 
     onMount(async () => {
         const user = await getCurrentUser(accountUid)
-        data = user
+        const fill = await getFillAccount(accountUid)
+        data = {
+            user: user,
+            fill: fill
+        }
         
         if (user.name === undefined) {
             goto("/error")
@@ -38,7 +45,7 @@
 {#if loading}
     <Loader overlay={false} />
 {:else}
-    <AccountInformations data={data} isUser={isUser} />
-    <PublicationGrid />
+    <AccountInformations data={data.user} isUser={isUser} />
+    <PublicationGrid data={data.fill} />
 {/if}
 

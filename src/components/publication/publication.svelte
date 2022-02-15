@@ -3,8 +3,11 @@
     import CommentForm from "./commentForm.svelte"
 
     export let comment = false
+    export let data
 
     let descriptionComplet = false
+
+    console.log(data);
 
     const seeMore = () => {
         descriptionComplet = !descriptionComplet
@@ -16,24 +19,26 @@
         <CommentForm />
     {/if}
     <div class="publication-top">
-        <a href="/account/user">
+        <a href={`/account/${data.user.uid}`}>
             <div>
-                <img src="https://random.imagecdn.app/150/150" alt="Profile user">
+                <img src={data.user.imgPath === "" ? "images/default-user.jpg" : data.user.imgPath} alt="Profile user">
             </div>
-            <p>therock</p>
+            <p>{data.user.username}</p>
         </a>
     </div>
     <div class="publication-slide">
-        <a href="/publication/id" class="publication-img">
+        <a href={`publication/${data.publication.id}`} class="publication-img">
+          {#each data.publication.files[0].items as item}
             <div>
-                <img src="https://random.imagecdn.app/500/1500" alt="Publication">
+                {#if item.filePath.includes("/o/images%")}
+                    <img src={item.filePath} alt="publication">
+                {:else}
+                    <video muted controls>
+                        <source src={item.filePath}>
+                    </video>
+                {/if}
             </div>
-            <div>
-                <img src="https://random.imagecdn.app/1000/500" alt="Publication">
-            </div>
-            <div>
-                <img src="https://random.imagecdn.app/600/300" alt="Publication">
-            </div>
+          {/each}
         </a>
         <div class="publication-btn">
             <div class="publication-bubble active"></div>
@@ -53,17 +58,17 @@
             </button>
         </div>
         <div class="publication-likes">
-            <p>562 Likes</p>
+            <p>{data.publication.likes} Likes</p>
         </div>
         <div class={comment ? "publication-desc publication-desc-comment" : "publication-desc"}>
             {#if descriptionComplet || comment}
-                <p class={comment ? "desc-margin" : ""}>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error consectetur doloremque ipsa consequatur, cupiditate ex facilis incidunt eos corrupti, veniam amet blanditiis totam itaque quod magni aspernatur voluptatem ipsum tempore dolores quia odio fugit? Nostrum soluta officia illum eos iure quo magni optio eligendi ut. Repellat dolore nostrum magni est iusto reprehenderit porro harum neque, dolores eum iste molestiae sapiente! Distinctio eveniet nemo nesciunt delectus cum similique ipsa, aliquam eum ut natus, magni vero molestiae facilis, eaque quisquam explicabo! Aliquid magni quia perferendis earum labore qui, pariatur totam obcaecati nisi tempore ullam suscipit quod, iusto modi eveniet ad quo illum dolorem repellendus delectus praesentium! Quidem quod iusto labore asperiores eaque hic quae earum, distinctio amet accusantium iste suscipit, minus nulla explicabo aspernatur. Voluptatibus repudiandae laborum laudantium nemo porro consequatur dolorum asperiores odit in dolores inventore reprehenderit fuga, optio est itaque eos odio accusantium blanditiis dignissimos eveniet. Laboriosam labore maxime tempora?</p>
+                <p class={comment ? "desc-margin" : ""}>{data.publication.text}</p>    
             {:else}
-                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iure saepe non nesciunt unde. Repellat eos...</p>
+                <p>{data.publication.text.substring(0, 35)}</p>
             {/if}
             {#if comment}
                 <small>2 days ago</small>
-            {:else}
+            {:else if data.publication.text.length > 30}
                 <button on:click={seeMore}>{descriptionComplet ? "Less" : "More"}</button>
             {/if}
         </div>
@@ -82,8 +87,8 @@
             <Comment />
             <Comment />
             <Comment />
-            {:else}
-                <a href="/publication/id">Show the 4 comments</a>
+            {:else if data.publication.comments > 0}
+                <a href="/publication/id">Show the {data.publication.comments > 1 ? data.publication.comments + " comments" : data.publication.comments + " comment"}</a>
             {/if}
         </div>
         {#if !comment}
@@ -148,7 +153,7 @@
         min-height: 250px;
     }
 
-    .publication-img div img {
+    .publication-img div img, .publication-img div video {
         width: 100%;
         height: 100%;
         object-fit: cover;
