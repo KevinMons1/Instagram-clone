@@ -19,7 +19,7 @@
         right: 0;
         bottom: 0;
         background-color: rgba(0, 0, 0, 0.8);
-        z-index: 20;
+        z-index: 100;
     }
 
     svg {
@@ -29,6 +29,6 @@
         width: 100px;
         height: 100px;
         transform: translate(-50%, -50%);
-        z-index: 21;
+        z-index: 101;
     }
 </style>

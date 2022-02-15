@@ -30,7 +30,14 @@
                     <button class="close" on:click={() => handleDelete(index)}>
                         <svg aria-label="delete image" color="#ffffff" fill="#ffffff" height="12" role="img" viewBox="0 0 24 24" width="12"><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="21" y2="3"></line></svg>
                     </button>
-                    <img on:click={() => slideIndex(index)} src={src} alt="Future publication">
+                    {#if src.type}
+                        <img on:click={() => slideIndex(index)} src={src.src} alt="Future publication">
+                    {:else}
+                        <video on:click={() => slideIndex(index)}>
+                            <track kind="captions">
+                            <source src={src.src}>
+                        </video>
+                    {/if}
                 </div>
             {/each}
             <button class="add-image" on:click={() => handleChange()}>
@@ -99,6 +106,7 @@
         margin: 0 10px;
         width: 75px;
         height: 75px;
+        background-color: #fff;
         cursor: pointer;
         overflow: hidden;
     }
@@ -107,6 +115,12 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+
+    .image-box video {
+        min-height: 100%;
+        min-width: 100%;
+        max-width: 100%;
     }
 
     .add-image {

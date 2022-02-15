@@ -7,8 +7,8 @@
 	import Nav from '../components/nav/nav.svelte';
 	import NewPublication from "../components/newPublication/newPublication.svelte"
 
-	let newPublication = true
-	let isAuth = null
+	let newPublication = false
+	let data = null
 	let isLogin = true
 	let loading = false
 
@@ -22,7 +22,7 @@
 
 	const interval = setInterval(() => {
 		// If server get too latence for response, show the loader
-		if (isAuth === null) {
+		if (data === null) {
 			loading = true
 		}
 		clearInterval(interval)
@@ -31,7 +31,7 @@
 	onMount(() => {
 		// Check if user is connected
 		storeAuth.subscribe(value => {
-			isAuth = value
+			data = value
 			loading = false
 		})
 		storeAuth.currentUser()
@@ -42,9 +42,9 @@
 	<title>Instagram clone</title>
 </svelte:head>
 
-{#if isAuth}
+{#if data}
 	{#if newPublication}
-		<NewPublication on:new-publication={changeNewPublication} />
+		<NewPublication uid={data.uid} on:new-publication={changeNewPublication} />
 	{/if}
 	<Nav on:new-publication={changeNewPublication} />
 	<main class="main-app">
@@ -52,7 +52,7 @@
 			<slot></slot>
 		</div>
 	</main>
-{:else if isAuth === false}
+{:else if data === false}
 	<main class="main-connexion">
 		{#if isLogin}
 			<Login on:change-login-page={changeLoginPage} />

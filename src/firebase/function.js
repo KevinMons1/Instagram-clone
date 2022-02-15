@@ -3,6 +3,7 @@ import { ref as sRef, uploadBytes, deleteObject, getDownloadURL   } from "fireba
 import { db, storage } from "./firebase-config"
 import { v4 as uuid } from "uuid"
 
+// ---- GET ----
 // Get data current user
 export const getCurrentUser = async (uid) => {
     const collectionRef = await doc(db, "users", uid)
@@ -16,12 +17,7 @@ export const getCurrentUser = async (uid) => {
     return data
 }
 
-export const updateUser = async (data) => {
-    const collectionRef = await doc(db, "users", data.uid)
-    await setDoc(collectionRef, data)
-    return
-}
-
+// ---- POST ----
 export const addStorageProfile = async (ref, file, imgName, dataUser) => {
     let newRef = ref + uuid()
     let isDelete = false
@@ -54,4 +50,54 @@ export const addStorageProfile = async (ref, file, imgName, dataUser) => {
 
         return true
     }
+}
+
+export const addNewPublication = async (text, uid, arrFiles) => {
+    let id = uuid()
+    let date = Date.now()
+    let arrPath = [{ items: [] }]
+    let upload = ""
+    let url = ""
+    const collectionRef = await doc(db, "publications", id)
+    const storageImageRef = sRef(storage, "/images/publications/" + uuid())
+    const storageVideoRef = sRef(storage, "/videos/publications/" + uuid())
+
+    if (arrFiles.length > 0) {
+        // Images
+        for (let i = 0; i < arrFiles.length; i++) {
+            if (arrFiles[i].type.includes("image/")) {
+                upload = await uploadBytes(storageImageRef, arrFiles[i])
+                url = await getDownloadURL(storageImageRef)
+            } else if (arrFiles[i].type.includes("video/")) {
+                upload = await uploadBytes(storageVideoRef, arrFiles[i])
+                url = await getDownloadURL(storageVideoRef)
+            }
+
+            // https://stackoverflow.com/questions/46593953/nested-arrays-are-not-supported/46627850#46627850
+            arrPath = [{ items: [...arrPath[0].items, {
+                filePath: url,
+                fileName: upload.metadata.name,
+            }]}]
+        }
+
+        // Publication
+        await setDoc(collectionRef, {
+            comments: 0,
+            likes: 0,
+            text: text,
+            data: date,
+            userId: uid,
+            files: arrPath
+        })
+
+        return true
+    } else return false
+    
+}
+
+// ---- UPDATE ----
+export const updateUser = async (data) => {
+    const collectionRef = await doc(db, "users", data.uid)
+    await setDoc(collectionRef, data)
+    return
 }
