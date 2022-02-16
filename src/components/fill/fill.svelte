@@ -2,11 +2,12 @@
     import Publication from "../publication/publication.svelte"
 
     export let data
+    export let uid
 </script>
 
 <div class="fill">
-    {#each data as item (item.id)}
-        <Publication data={item} />
+    {#each data as item (item.publication.id)}
+        <Publication data={item} uid={uid} />
     {/each}
 </div>
 

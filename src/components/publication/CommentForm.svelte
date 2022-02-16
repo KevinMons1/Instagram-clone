@@ -39,10 +39,11 @@
         border: none;
         background: none;
         font-size: 1.4rem;
+        outline: none;
     }
 
     .form-content button {
-        margin-right: 10px;
+        margin: 0 10px;
         border: none;
         background: none;
         color: #0095f6;

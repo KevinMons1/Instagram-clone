@@ -1,3 +1,7 @@
+<script>
+    export let data
+</script>
+
 <div class="comment">
     <a href="/account/user" class="comment-img">
         <div>
@@ -6,7 +10,7 @@
     </a>
     <div class="comment-right">
         <a class="comment-name" href="/account/user">snoopdog</a>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus magni deleniti atque exercitationem mollitia voluptatibus impedit facilis quia nesciunt architecto. Beatae animi omnis quaerat. Soluta!</p>
+        <p>{data.text}</p>
         <small>13 h</small>
     </div>
 </div>

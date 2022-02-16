@@ -1,5 +1,5 @@
-import { doc, getDoc, setDoc, getDocs, query, collection, where, limit } from "firebase/firestore"
-import { ref as sRef, uploadBytes, deleteObject, getDownloadURL   } from "firebase/storage"
+import { doc, getDoc, setDoc, getDocs, query, collection, where, limit, onSnapshot } from "firebase/firestore"
+import { ref as sRef, uploadBytes, deleteObject, getDownloadURL } from "firebase/storage"
 import { db, storage } from "./firebase-config"
 import { v4 as uuid } from "uuid"
 
@@ -35,6 +35,7 @@ export const getFillAccount = async (uid) => {
 }
 
 export const getFillAll = async (limitNbr) => {
+    const likesRef = await collection(db, "likes")
     const collectionRef = await collection(db, "publications")
     const queryUid = await query(collectionRef, limit(limitNbr))
     let data = []
@@ -50,16 +51,79 @@ export const getFillAll = async (limitNbr) => {
         })
     })
 
+    
     // Data user
     for (let i = 0; i < data.length; i++) {
         const userData = await getCurrentUser(data[i].uid)
+        const queryLikes = await query(likesRef, where("publicationId", "==", data[i].id))
+        const likesData = await getDocs(queryLikes)
+        
+        let peopleLike = []
+        
+        likesData.forEach(likes => {
+            peopleLike = likes.data().peopleLike
+        })
+        
         data[i] = {
-            publication: data[i],
+            publication: {
+                ...data[i],
+                peopleLike: peopleLike
+            },
             user: userData
         }
     }
 
     return data
+}
+
+export const getPublicationOne = async (id) => {
+    const likesRef = await collection(db, "likes")
+    const collectionRef = await doc(db, "publications", id)
+    let data = {}
+    
+    // Data publication
+    const querySnapshot = await getDoc(collectionRef)
+    data = {
+        ...querySnapshot.data(),
+        id: querySnapshot.id
+    }
+
+    
+    // Data user
+    const userData = await getCurrentUser(data.uid)
+    const queryLikes = await query(likesRef, where("publicationId", "==", data.id))
+    const likesData = await getDocs(queryLikes)
+    
+    let peopleLike = []
+    
+    likesData.forEach(like => {
+        peopleLike = like.data().peopleLike
+    })
+    
+    data = {
+        publication: {
+            ...data,
+            peopleLike: peopleLike
+        },
+        user: userData
+    }
+
+    return data
+}
+
+export const getComments = async (id) => {
+    const commentsRef = await collection(db, "comments")
+
+    const queryComments = await query(commentsRef, where("publicationId", "==", id))
+    const commentsData = await getDocs(queryComments)
+
+    let peopleComment = []
+    
+    commentsData.forEach(comment => {
+        peopleComment = comment.data().peopleComment[0].items
+    })
+
+    return peopleComment
 }
 
 // ---- POST ----
@@ -131,12 +195,14 @@ export const addNewPublication = async (text, uid, arrFiles) => {
     let upload = ""
     let url = ""
     const collectionRef = await doc(db, "publications", id)
-    const storageImageRef = sRef(storage, "/images/publications/" + uuid())
-    const storageVideoRef = sRef(storage, "/videos/publications/" + uuid())
-
+    const likesRef = await doc(db, "likes", uuid())
+    
     if (arrFiles.length > 0) {
         // Images
         for (let i = 0; i < arrFiles.length; i++) {
+            const storageImageRef = sRef(storage, "/images/publications/" + uuid())
+            const storageVideoRef = sRef(storage, "/videos/publications/" + uuid())
+            
             if (arrFiles[i].type.includes("image/")) {
                 upload = await uploadBytes(storageImageRef, arrFiles[i])
                 url = await getDownloadURL(storageImageRef)
@@ -171,6 +237,12 @@ export const addNewPublication = async (text, uid, arrFiles) => {
             publications: publications
         })
 
+        // Add likes
+        await setDoc(likesRef, {
+            publicationId: id,
+            peopleLike: []
+        })
+
         return true
     } else return false
     
@@ -180,5 +252,26 @@ export const addNewPublication = async (text, uid, arrFiles) => {
 export const updateUser = async (data) => {
     const collectionRef = await doc(db, "users", data.uid)
     await setDoc(collectionRef, data)
+    return
+}
+
+export const updateLike = async (data, peopleLike) => {
+    const publicationRef = await doc(db, "publications", data.id)
+    const likesRef = await collection(db, "likes")
+    const queryLikes = await query(likesRef, where("publicationId", "==", data.id))
+
+    // Like
+    const snapshot = onSnapshot(queryLikes, (item) => {
+        item.forEach(async (like) => {
+            const collectionRef = await doc(db, "likes", like.id)
+            await setDoc(collectionRef, {
+                publicationId: data.id,
+                peopleLike: peopleLike
+            })
+        })
+    })
+
+    // Publication
+    await setDoc(publicationRef, data)
     return
 }
