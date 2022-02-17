@@ -1,17 +1,19 @@
 <script>
+    import moment from "moment"
+
     export let data
 </script>
 
 <div class="comment">
-    <a href="/account/user" class="comment-img">
+    <a href={`account/${data.user.uid}`} class="comment-img">
         <div>
-            <img src="https://random.imagecdn.app/250/250" alt="Profile user">
+            <img src={data.user.imgPath === "" ? "images/default-user.jpg" : data.user.imgPath} alt="Profile user">
         </div>
     </a>
     <div class="comment-right">
-        <a class="comment-name" href="/account/user">snoopdog</a>
-        <p>{data.text}</p>
-        <small>13 h</small>
+        <a class="comment-name" href={`account/${data.user.uid}`}>{data.user.username}</a>
+        <p>{data.comment.text}</p>
+        <small>{moment(data.comment.date).fromNow()}</small>
     </div>
 </div>
 
@@ -36,6 +38,7 @@
     
     .comment-right {
         margin-left: 10px;
+        word-break: break-word;
     }
 
     .comment-name {

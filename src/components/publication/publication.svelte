@@ -7,8 +7,6 @@
     export let comment = false
     export let data
     export let uid
-
-    console.log(data);
     
     let descriptionComplet = false
     let slide
@@ -60,15 +58,36 @@
 
         delete newData.publication.peopleLike
 
-        console.log(newData);
-
         updateLike(newData.publication, peopleLike)
+    }
+
+    const handleComment = (e) => {
+        data = {
+            ...data,
+            publication: {
+                ...data.publication,
+                peopleComment: {
+                    id: data.publication.peopleComment.id,
+                    comments:  [
+                        ...data.publication.peopleComment.comments,
+                        {
+                            comment: e.detail,
+                            user: {
+                                username: data.user.username,
+                                uid: data.user.uid,
+                                imgPath: data.user.imgPath
+                            }
+                        }
+                    ]
+                }
+            }
+        }
     }
 </script>
 
 <article class="publication">
     {#if comment}
-        <CommentForm />
+        <CommentForm on:new-comment={handleComment} cid={data.publication.peopleComment.id} uid={uid} />
     {/if}
     <div class="publication-top">
         <a href={`/account/${data.user.uid}`}>
@@ -133,12 +152,12 @@
         </div>
         <div class={comment ? "publication-comment publi-com-margin" : "publication-comment"}>
             {#if comment}
-                {#if data.publication.peopleComment.length > 0}
-                    {#each data.publication.peopleComment as item}
+                {#if data.publication.peopleComment.comments.length > 0}
+                    {#each data.publication.peopleComment.comments as item}
                         <Comment data={item} />
                     {/each}
                 {:else}
-                    <p>Any comment</p>
+                    <p class="anyComment">Any comment...</p>
                 {/if}
             {:else if data.publication.comments > 0}
                 <a href="/publication/id">Show the {data.publication.comments > 1 ? data.publication.comments + " comments" : data.publication.comments + " comment"}</a>
@@ -284,6 +303,11 @@
 
     .desc-margin {
         margin-bottom: 20px;
+    }
+
+    .anyComment {
+        margin-top: 10px;
+        font-size: 1.4rem;
     }
 
 </style>

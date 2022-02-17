@@ -50,7 +50,6 @@ export const getFillAll = async (limitNbr) => {
             id: item.id
         })
     })
-
     
     // Data user
     for (let i = 0; i < data.length; i++) {
@@ -80,6 +79,7 @@ export const getPublicationOne = async (id) => {
     const likesRef = await collection(db, "likes")
     const collectionRef = await doc(db, "publications", id)
     let data = {}
+    let peopleLike = []
     
     // Data publication
     const querySnapshot = await getDoc(collectionRef)
@@ -87,14 +87,11 @@ export const getPublicationOne = async (id) => {
         ...querySnapshot.data(),
         id: querySnapshot.id
     }
-
     
     // Data user
     const userData = await getCurrentUser(data.uid)
     const queryLikes = await query(likesRef, where("publicationId", "==", data.id))
     const likesData = await getDocs(queryLikes)
-    
-    let peopleLike = []
     
     likesData.forEach(like => {
         peopleLike = like.data().peopleLike
@@ -112,18 +109,43 @@ export const getPublicationOne = async (id) => {
 }
 
 export const getComments = async (id) => {
-    const commentsRef = await collection(db, "comments")
+    let dataUser = {}
+    let peopleUser = []
+    let peopleComment = []
+    let cid = 0
 
+    const commentsRef = await collection(db, "comments")
     const queryComments = await query(commentsRef, where("publicationId", "==", id))
     const commentsData = await getDocs(queryComments)
 
-    let peopleComment = []
-    
     commentsData.forEach(comment => {
         peopleComment = comment.data().peopleComment[0].items
+        cid = comment.id
     })
 
-    return peopleComment
+    for (let i = 0; i < peopleComment.length; i++) {
+        dataUser = await getCurrentUser(peopleComment[i].uid)
+        peopleUser.push({
+            ...dataUser,
+            uid: peopleComment[i].uid
+        })
+    }
+
+    for (let i = 0; i < peopleComment.length; i++) {
+        peopleComment[i] = {
+            comment: peopleComment[i],
+            user: {
+                username: peopleUser[i].username,
+                uid: peopleUser[i].uid,
+                imgPath: peopleUser[i].imgPath
+            }
+        }
+    }
+
+    return {
+        id: cid,
+        comments: peopleComment
+    }
 }
 
 // ---- POST ----
@@ -196,6 +218,7 @@ export const addNewPublication = async (text, uid, arrFiles) => {
     let url = ""
     const collectionRef = await doc(db, "publications", id)
     const likesRef = await doc(db, "likes", uuid())
+    const commentsRef = await doc(db, "comments", uuid())
     
     if (arrFiles.length > 0) {
         // Images
@@ -243,9 +266,36 @@ export const addNewPublication = async (text, uid, arrFiles) => {
             peopleLike: []
         })
 
+        // Add comments
+        await setDoc(commentsRef, {
+            publicationId: id,
+            peopleComment: [{
+                items: []
+            }]
+        })
+
         return true
     } else return false
     
+}
+
+export const addComment = async (id, data) => {
+    try {
+        const commentRef = await doc(db, "comments", id)
+        const commentDoc = await getDoc(commentRef)
+        const commentData = commentDoc.data()
+    
+        await setDoc(commentRef, {
+            publicationId: commentData.publicationId,
+            peopleComment: [{
+                items: [...commentData.peopleComment[0].items, data]
+            }]
+        })
+
+        return true
+    } catch {
+        return false
+    }
 }
 
 // ---- UPDATE ----

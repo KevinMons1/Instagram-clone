@@ -30,7 +30,7 @@
                 peopleComment: comments
             }
         }
-
+        
 		authStore.subscribe(value => {
 			uid = value.uid
 		})
@@ -38,7 +38,7 @@
 
     const interval = setInterval(() => {
 		// If server get too latence for response, show the loader
-		if (data.length === 0) {
+		if (data === null) {
 			loading = true
 		}
 		clearInterval(interval)

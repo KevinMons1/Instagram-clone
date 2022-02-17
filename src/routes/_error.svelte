@@ -10,6 +10,10 @@
 		margin: 0 auto;
 	}
 
+	p, pre {
+		font-size: 1.4rem;
+	}
+
 	h1 {
 		font-size: 2.8em;
 		font-weight: 700;
@@ -34,8 +38,6 @@
 <h1>{status}</h1>
 
 <p>{error.message}</p>
-
-<p>erroooooooooooooooooooooooooooooooooooooooor</p>
 
 {#if dev && error.stack}
 	<pre>{error.stack}</pre>

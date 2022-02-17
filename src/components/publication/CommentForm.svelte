@@ -1,26 +1,57 @@
 <script>
-    const handleSubmit = () => {
+    import { createEventDispatcher } from "svelte"
+    import { addComment } from "../../firebase/function"
 
+    export let uid
+    export let cid
+
+    const dispatch = createEventDispatcher();
+    let error = ""
+    let data = ""
+
+    const handleSubmit = async () => {
+        error = ""
+
+        if (data.length <= 250) {
+            const newComment = {
+                uid: uid,
+                text: data,
+                date: Date.now()
+            }
+
+            const result = await addComment(cid, newComment)
+
+            data = ""
+            
+            if (result) {
+                dispatch("new-comment", newComment)
+            } else error = "Error from server... Try later."
+        } else error = "Your message is too long. Maximum 250 characters"
     }
 </script>
 
 <aside class="comment-form">
     <form class="form-content" on:submit|preventDefault={handleSubmit}>
-        <input type="text" placeholder="Add a comment...">
+        <input bind:value={data} type="text" placeholder="Add a comment...">
         <button type="submit">Publier</button>
     </form>
+    {#if error !== ""}
+        <p class="error-txt">{error}</p>
+    {/if}
 </aside>
 
 <style>
     .comment-form {
         position: fixed;
         bottom: 0;
-        width: 100%;
-        height: 62px;
+        right: 0;
+        left: 0;
+        min-height: 60px;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 0 20px;
+        flex-direction: column;
+        padding: 5px 20px;
         background-color: #EFEFEF;
     }
 
@@ -49,5 +80,9 @@
         color: #0095f6;
         font-size: 1.4rem;
         outline: none;
+    }
+
+    .error-txt {
+        margin-top: 5px;
     }
 </style>
