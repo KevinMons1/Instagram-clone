@@ -11,7 +11,6 @@
     const handleOptions = (e) => {
         dataForDelete = e.detail
         optionsOpen = !optionsOpen
-        console.log(e.detail, uid);
     }
 </script>
 

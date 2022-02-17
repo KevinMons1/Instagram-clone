@@ -17,11 +17,12 @@
 
     $: files !== null ? handleFile() : null
 
+    
     const handleSubmit = async () => {
         const { name, username, description } = data
         const { nameCopy, usernameCopy, descriptionCopy } = dataCopy
         let regexName = /^[a-zA-Z0-9éè\(+=._-]+$/
-
+        
         loading = true
         
         if (uploadFile || name !== nameCopy || username !== usernameCopy || description !== descriptionCopy) {
@@ -31,18 +32,17 @@
                         if (regexName.test(name.replace(/ /g, ""))) {
                             if (regexName.test(username)) {
                                 if (uploadFile && files && files[0]) {
-
                                     // Files
                                     let file = files[0]
                                     reader.readAsDataURL(file) // display image
                                     const upload = await addStorageProfile("/images/profiles/", file, data.imgName, data) 
-                                    if (upload) goto(`account/${dataCopy.uid}`)
+                                    if (upload) dataCopy.uid ? goto(`account/${dataCopy.uid}`) : goto(`/`)
                                     else createError(2, "Error from server... Try later.")
 
                                 } else {
                                     // Informations user
                                     await updateUser(data)
-                                    goto(`account/${dataCopy.uid}`)
+                                    dataCopy.uid ? goto(`account/${dataCopy.uid}`) : goto(`/`)
                                 }
                             } else createError(3, "Your username is invalid")
                         } else createError(2, "Your name is invalid")

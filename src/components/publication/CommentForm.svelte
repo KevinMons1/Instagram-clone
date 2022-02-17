@@ -49,6 +49,7 @@
 <style>
     .comment-form {
         position: fixed;
+        z-index: 10;
         bottom: 0;
         right: 0;
         left: 0;
@@ -86,6 +87,7 @@
         color: #0095f6;
         font-size: 1.4rem;
         outline: none;
+        cursor: pointer;
     }
 
     .error-txt {

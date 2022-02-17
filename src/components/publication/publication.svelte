@@ -1,11 +1,11 @@
 <script>
     import { createEventDispatcher } from "svelte"
+    import storeAuth from "../../store/auth" 
     import moment from "moment"
     import Comment from "./comment.svelte"
     import CommentForm from "./commentForm.svelte"
     import { updateLike } from "../../firebase/function"
 
-    
     export let comment = false
     export let data
     export let uid
@@ -22,11 +22,12 @@
 
     const handleScrollSlide = () => {
         const divNbr = data.publication.files[0].items.length
+        const width = slide.getBoundingClientRect().width
 
-        if (slide.scrollLeft % window.innerWidth / divNbr === 0) {
-            const index = slide.scrollLeft / window.innerWidth
+        if (Math.floor(slide.scrollLeft % width / divNbr) === 0) {
+            const index = slide.scrollLeft / width
             bubbles.forEach((element, i) => {
-                if (i === index) element.classList.add("active")
+                if (i === Math.floor(index)) element.classList.add("active")
                 else element.classList.remove("active")
             })
         }
@@ -65,6 +66,12 @@
     }
 
     const handleComment = (e) => {
+        let userData = {}
+
+        storeAuth.subscribe(value => {
+            userData = value
+        })
+
         data = {
             ...data,
             publication: {
@@ -76,9 +83,9 @@
                         {
                             comment: e.detail,
                             user: {
-                                username: data.user.username,
-                                uid: data.user.uid,
-                                imgPath: data.user.imgPath
+                                username: userData.username,
+                                uid: userData.uid,
+                                imgPath: userData.imgPath
                             }
                         }
                     ]
@@ -236,6 +243,10 @@
         object-fit: cover;
     }
 
+    .publication-top svg {
+        cursor: pointer;
+    }
+
     /* Image */
     
     .publication-slide {
@@ -249,14 +260,23 @@
     }
 
     .publication-img div {
-        scroll-snap-align: start;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         min-width: 100%;
         max-height: 90vh;
         min-height: 250px;
+        background-color: #000;
+        scroll-snap-align: start;
     }
 
-    .publication-img div img, .publication-img div video {
+    .publication-img div img {
         width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .publication-img div video {
         height: 100%;
         object-fit: cover;
     }

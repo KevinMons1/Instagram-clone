@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, getDocs, query, collection, where, limit, onSnapshot, deleteDoc } from "firebase/firestore"
+import { doc, getDoc, setDoc, getDocs, query, collection, where, limit, orderBy, onSnapshot, deleteDoc } from "firebase/firestore"
 import { ref as sRef, uploadBytes, deleteObject, getDownloadURL } from "firebase/storage"
 import { db, storage } from "./firebase-config"
 import { v4 as uuid } from "uuid"
@@ -33,18 +33,20 @@ export const getFillAccount = async (uid) => {
             ...item.data(),
             id: item.id
         })
+        data = data.reverse()
     })
 
     return data
 }
 
-export const getFillAll = async (limitNbr) => {
+export const getFillAll = async (date, limitNbr) => {
+    console.log(date, limitNbr);
     const likesRef = await collection(db, "likes")
     const collectionRef = await collection(db, "publications")
-    const queryUid = await query(collectionRef, limit(limitNbr))
+    const queryPublication = await query(collectionRef, where("date", "<", date), orderBy("date", "desc"), limit(limitNbr))
     let data = []
 
-    const querySnapshot = await getDocs(queryUid)
+    const querySnapshot = await getDocs(queryPublication)
     
     // Data publication
     querySnapshot.forEach(item => {

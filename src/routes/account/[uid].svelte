@@ -15,6 +15,7 @@
     import { getCurrentUser, getFillAccount } from "../../firebase/function"
 
     export let accountUid;
+    let actualAccountuid = accountUid
     let loading = true
     let isUser = null
     let data = {
@@ -22,7 +23,13 @@
         fill: {}
     }
 
+    $: if (actualAccountuid !== accountUid) handleLoad()
+
     onMount(async () => {
+       await handleLoad()
+    })
+
+    const handleLoad = async () => {
         const user = await getCurrentUser(accountUid)
         const fill = await getFillAccount(accountUid)
         data = {
@@ -39,7 +46,9 @@
                 loading = false
             })
         }
-    })
+
+        return
+    }
 </script>
 
 {#if loading}
