@@ -106,7 +106,7 @@
         margin: 0 10px;
         width: 75px;
         height: 75px;
-        background-color: #fff;
+        background-color: #000;
         cursor: pointer;
         overflow: hidden;
     }

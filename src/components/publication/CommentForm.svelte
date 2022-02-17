@@ -4,6 +4,7 @@
 
     export let uid
     export let cid
+    export let dataPublication
 
     const dispatch = createEventDispatcher();
     let error = ""
@@ -19,7 +20,12 @@
                 date: Date.now()
             }
 
-            const result = await addComment(cid, newComment)
+            dataPublication = {
+                ...dataPublication,
+                comments: dataPublication.comments + 1
+            }
+
+            const result = await addComment(cid, newComment, dataPublication)
 
             data = ""
             

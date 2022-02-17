@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, getDocs, query, collection, where, limit, onSnapshot } from "firebase/firestore"
+import { doc, getDoc, setDoc, getDocs, query, collection, where, limit, onSnapshot, deleteDoc } from "firebase/firestore"
 import { ref as sRef, uploadBytes, deleteObject, getDownloadURL } from "firebase/storage"
 import { db, storage } from "./firebase-config"
 import { v4 as uuid } from "uuid"
@@ -12,6 +12,10 @@ export const getCurrentUser = async (uid) => {
 
     if (docSnap.exists()) {
         data = await docSnap.data()
+        data = {
+            ...data,
+            uid: docSnap.id
+        }
     } 
 
     return data
@@ -279,8 +283,9 @@ export const addNewPublication = async (text, uid, arrFiles) => {
     
 }
 
-export const addComment = async (id, data) => {
+export const addComment = async (id, data, dataPublication) => {
     try {
+        const publicationRef = await doc(db, "publications", dataPublication.id)
         const commentRef = await doc(db, "comments", id)
         const commentDoc = await getDoc(commentRef)
         const commentData = commentDoc.data()
@@ -291,6 +296,8 @@ export const addComment = async (id, data) => {
                 items: [...commentData.peopleComment[0].items, data]
             }]
         })
+
+        await setDoc(publicationRef, dataPublication)
 
         return true
     } catch {
@@ -324,4 +331,57 @@ export const updateLike = async (data, peopleLike) => {
     // Publication
     await setDoc(publicationRef, data)
     return
+}
+
+// ---- DELETE ----
+export const deletePublication = async (data) => {
+    try {
+        const publicationRef = await doc(db, "publications", data.publication.id)
+        const userRef = await doc(db, "users", data.user.uid)
+        const likesRef = await collection(db, "likes")
+        const commentsRef = await collection(db, "comments")
+        
+        const queryLikes = await query(likesRef, where("publicationId", "==", data.publication.id))
+        const queryComments = await query(commentsRef, where("publicationId", "==", data.publication.id))
+
+        // Publication
+        await deleteDoc(publicationRef)
+
+        // Likes
+        const snapshotLike = onSnapshot(queryLikes, (item) => {
+            item.forEach(async (like) => {
+                await deleteDoc(doc(db, "likes", like.id))
+            })
+        })
+
+        // Comments
+        const snapshotComment = onSnapshot(queryComments, (item) => {
+            item.forEach(async (comment) => {
+                await deleteDoc(doc(db, "comments", comment.id))
+            })
+        })
+
+        // User publication number
+        delete data.user.uid
+        await setDoc(userRef, {
+            ...data.user,
+            publications: data.user.publications - 1
+        })
+
+        // Storage
+        const files = data.publication.files[0].items
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].filePath.includes("/images%")) {
+                const storageRef = await sRef(storage, `images/publications/${files[i].fileName}`)  
+                await deleteObject(storageRef)
+            } else if (files[i].filePath.includes("/videos%")) {
+                const storageRef = await sRef(storage, `videos/publications/${files[i].fileName}`)        
+                await deleteObject(storageRef)
+            }
+        }
+
+        return true
+    } catch {
+        return false
+    }
 }

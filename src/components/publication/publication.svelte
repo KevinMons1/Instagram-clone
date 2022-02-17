@@ -1,13 +1,16 @@
 <script>
+    import { createEventDispatcher } from "svelte"
     import moment from "moment"
     import Comment from "./comment.svelte"
     import CommentForm from "./commentForm.svelte"
     import { updateLike } from "../../firebase/function"
 
+    
     export let comment = false
     export let data
     export let uid
     
+    const dispatch = createEventDispatcher();
     let descriptionComplet = false
     let slide
     let bubbles = []
@@ -29,12 +32,12 @@
         }
     }
 
-    const handleLikes = async () => {
-        let peopleLike = data.publication.peopleLike
+    const handleLikes = () => {
+        let peopleLike = data.publication.peopleLike ? data.publication.peopleLike : []
         let likes = data.publication.likes
 
         if (isLike) {
-            peopleLike = await peopleLike.filter(userId => userId !== uid)
+            peopleLike = peopleLike.filter(userId => userId !== uid)
             likes = data.publication.likes - 1
             isLike = false
         } else {
@@ -83,11 +86,24 @@
             }
         }
     }
+
+    const handleClickOptions = () => {
+        dispatch("options", data)
+    }
+
+    const handleShare = () => {
+        navigator.share({
+            title: "Instagram clone publication",
+            text: `Publication of ${data.user.username}`,
+            url: `${window.location.origin}/publication/${data.publication.id}`
+        })
+    }
+
 </script>
 
 <article class="publication">
     {#if comment}
-        <CommentForm on:new-comment={handleComment} cid={data.publication.peopleComment.id} uid={uid} />
+        <CommentForm on:new-comment={handleComment} dataPublication={data.publication} cid={data.publication.peopleComment.id} uid={uid} />
     {/if}
     <div class="publication-top">
         <a href={`/account/${data.user.uid}`}>
@@ -96,6 +112,9 @@
             </div>
             <p>{data.user.username}</p>
         </a>
+        <div on:click={handleClickOptions}>
+            <svg aria-label="Options" color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24"><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
+        </div>
     </div>
     <div class="publication-slide">
         <a href={`publication/${data.publication.id}`} class="publication-img" bind:this={slide} on:scroll={handleScrollSlide}>
@@ -112,9 +131,11 @@
           {/each}
         </a>
         <div class="publication-btn">
-            {#each data.publication.files[0].items as item, index}
-                <div class={index === 0 ? "publication-bubble active" : "publication-bubble"} bind:this={bubbles[index]}></div>
-            {/each}
+            {#if data.publication.files[0].items.length > 1}
+                {#each data.publication.files[0].items as item, index}
+                    <div class={index === 0 ? "publication-bubble active" : "publication-bubble"} bind:this={bubbles[index]}></div>
+                {/each}
+            {/if}
         </div>
     </div>
     <div class="publication-content">
@@ -131,7 +152,7 @@
                     <svg aria-label="To comment" color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24"><path d="M20.656 17.008a9.993 9.993 0 10-3.59 3.615L22 22z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path></svg>            
                 </a>
             {/if}
-            <button class="action" name="share">
+            <button class="action" name="share" on:click={handleShare}>
                 <svg aria-label="To share" color="#262626" fill="#262626" height="24" role="img" viewBox="0 0 24 24" width="24"><line fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2" x1="22" x2="9.218" y1="3" y2="10.083"></line><polygon fill="none" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></polygon></svg>
             </button>
         </div>
@@ -142,7 +163,7 @@
             {#if descriptionComplet || comment}
                 <p class={comment ? "desc-margin" : ""}>{data.publication.text}</p>    
             {:else}
-                <p>{data.publication.text.substring(0, 35)}</p>
+                <p>{data.publication.text.length > 35 ? `${data.publication.text.substring(0, 35)}...` : data.publication.text}</p>
             {/if}
             {#if comment}
                 <small>{moment(data.publication.date).fromNow()}</small>
@@ -184,6 +205,9 @@
 
     /* Top */
     .publication-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         padding: 0 20px 20px 20px;
     }
 

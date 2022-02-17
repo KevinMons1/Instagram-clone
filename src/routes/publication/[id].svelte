@@ -12,12 +12,15 @@
     import { getPublicationOne, getComments } from "../../firebase/function"
     import Publication from "../../components/publication/publication.svelte"
     import Loader from "../../components/loader/loader.svelte"
+    import OptionsModal from "../../components/optionsModal/optionsModal.svelte"
 
     export let id
-    
+
     let data = null
     let uid
     let loading = false
+    let optionsOpen = false
+    let dataForDelete = {}
 
     onMount(async () => {
         const publication = await getPublicationOne(id)
@@ -43,11 +46,19 @@
 		}
 		clearInterval(interval)
 	}, 500)
+
+    const handleOptions = (e) => {
+        dataForDelete = e.detail
+        optionsOpen = !optionsOpen
+    }
 </script>
 
 
 {#if data !== null}
-    <Publication data={data} uid={uid} comment={true} />
+    {#if optionsOpen}
+        <OptionsModal uid={uid} data={dataForDelete} on:options={() => optionsOpen = !optionsOpen} />
+    {/if}
+    <Publication on:options={handleOptions} data={data} uid={uid} comment={true} />
 {:else if loading}
 	<Loader />
 {/if}

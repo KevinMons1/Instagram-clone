@@ -1,13 +1,26 @@
 <script>
     import Publication from "../publication/publication.svelte"
+    import OptionsModal from "../optionsModal/optionsModal.svelte"
 
     export let data
     export let uid
+
+    let optionsOpen = false
+    let dataForDelete = {}
+
+    const handleOptions = (e) => {
+        dataForDelete = e.detail
+        optionsOpen = !optionsOpen
+        console.log(e.detail, uid);
+    }
 </script>
 
+{#if optionsOpen}
+    <OptionsModal uid={uid} data={dataForDelete} on:options={() => optionsOpen = !optionsOpen} />
+{/if}
 <div class="fill">
     {#each data as item (item.publication.id)}
-        <Publication data={item} uid={uid} />
+        <Publication on:options={handleOptions} data={item} uid={uid} />
     {/each}
 </div>
 
