@@ -21,6 +21,29 @@ export const getCurrentUser = async (uid) => {
     return data
 }
 
+export const getFollowed = async (followedId, followerId) => {
+        const followRef = await collection(db, "follow")
+        const queryFollow = await query(followRef, where("followedId", "==", followedId))
+        const querySnapshot = await getDocs(queryFollow)
+        let id = ""
+    
+    try {
+        if (querySnapshot.size === 0) return id
+        else {
+            querySnapshot.forEach((item, index) => {
+                if (item.data().followerId === followerId) {
+                    id = item.id
+                    throw id
+                }
+
+                if (index === querySnapshot.size) throw id
+            })
+        }
+    } catch (message) {
+        return id
+    }
+}
+
 export const getFillAccount = async (uid) => {
     const collectionRef = await collection(db, "publications")
     const queryUid = await query(collectionRef, where("uid", "==", uid))
@@ -40,7 +63,6 @@ export const getFillAccount = async (uid) => {
 }
 
 export const getFillAll = async (date, limitNbr) => {
-    console.log(date, limitNbr);
     const likesRef = await collection(db, "likes")
     const collectionRef = await collection(db, "publications")
     const queryPublication = await query(collectionRef, where("date", "<", date), orderBy("date", "desc"), limit(limitNbr))
@@ -307,6 +329,36 @@ export const addComment = async (id, data, dataPublication) => {
     }
 }
 
+export const addFollow = async (followerId, followedId) => {
+    try {
+        const id = uuid()
+        const followerRef = await doc(db, "users", followerId)
+        const followedRef = await doc(db, "users", followedId)
+        const followRef = await doc(db, "follow", id)
+
+        await setDoc(followRef, {
+            followerId: followerId,
+            followedId: followedId
+        })
+
+        const followerData = (await getDoc(followerRef)).data()
+        const followedData = (await getDoc(followedRef)).data()
+
+        await setDoc(followerRef, {
+            ...followerData,
+            subscriptions: followerData.subscriptions + 1
+        })
+        await setDoc(followedRef, {
+            ...followedData,
+            subscribers : followerData.subscribers  + 1
+        })
+
+        return id
+    } catch {
+        return false
+    }
+}
+
 // ---- UPDATE ----
 export const updateUser = async (data) => {
     const collectionRef = await doc(db, "users", data.uid)
@@ -383,6 +435,33 @@ export const deletePublication = async (data) => {
         }
 
         return true
+    } catch {
+        return false
+    }
+}
+
+export const deleteFollow = async (followId, followerId, followedId) => {
+    // just return a typeof string
+
+    try {
+        const followerRef = await doc(db, "users", followerId)
+        const followedRef = await doc(db, "users", followedId)
+
+        const followerData = (await getDoc(followerRef)).data()
+        const followedData = (await getDoc(followedRef)).data()
+
+        await setDoc(followerRef, {
+            ...followerData,
+            subscriptions: followerData.subscriptions + 1
+        })
+        await setDoc(followedRef, {
+            ...followedData,
+            subscribers : followerData.subscribers  + 1
+        })
+
+        await deleteDoc(doc(db, "follow", followId))
+        
+        return ""
     } catch {
         return false
     }

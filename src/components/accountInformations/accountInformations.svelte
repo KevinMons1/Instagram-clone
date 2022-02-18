@@ -1,8 +1,27 @@
 <script>
     import { goto } from "@sapper/app"
+    import { addFollow, deleteFollow } from "../../firebase/function"
     
     export let isUser
     export let data
+    export let uid
+    export let isFollow
+    let antiSpam = 0
+
+    const handleFollow = async () => {
+        if (antiSpam <= 3) {
+            antiSpam++
+            let result
+            
+            if (isFollow) result = await deleteFollow(isFollow, uid, data.uid)
+            else result = await addFollow(uid, data.uid)
+
+            console.log(result);
+            
+            if (typeof result === "string") isFollow = result
+            else alert("Error from server...")
+        }
+    }
 </script>
 
 <svelte:head>
@@ -23,7 +42,7 @@
             {:else if isUser === false}
                 <div class="ai-action">
                     <button>Contact</button>
-                    <button>Follow</button>
+                    <button on:click={handleFollow}>{isFollow !== "" ? "✔ Followed" : "Follow"}</button>
                 </div>
             {/if}
         </div>
