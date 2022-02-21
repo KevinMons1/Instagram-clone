@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from "svelte"
-    import { addComment } from "../../firebase/function"
+    import { addComment } from "../../firebase/publication"
 
     export let uid
     export let cid

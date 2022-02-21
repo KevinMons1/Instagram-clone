@@ -1,7 +1,18 @@
 <script>
+    import { onMount } from "svelte"
     import UserCard from "../../components/message/userCard.svelte"
+    import { getInbox } from "../../firebase/message"
     
     export let minWidth
+    export let uid
+
+    let data = []
+
+    onMount(async () => {
+        data = await getInbox(uid)
+        console.log(data);
+    })
+
 </script>
 
 <section class={minWidth ? "inbox" : "inbox minWidth"}>

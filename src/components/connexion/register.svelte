@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from "svelte"
-    import { addUser } from "../../firebase/function";
+    import { addUser } from "../../firebase/user";
     import storeAuth from "../../store/auth"
     import Loader from "../loader/loader.svelte"
     import RegisterStep1 from "./registerStep1.svelte";

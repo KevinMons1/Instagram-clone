@@ -9,7 +9,7 @@
 <script>
     import { onMount } from "svelte"
     import authStore from "../../store/auth"
-    import { getPublicationOne, getComments } from "../../firebase/function"
+    import { getPublicationOne, getComments } from "../../firebase/publication"
     import Publication from "../../components/publication/publication.svelte"
     import Loader from "../../components/loader/loader.svelte"
     import OptionsModal from "../../components/optionsModal/optionsModal.svelte"

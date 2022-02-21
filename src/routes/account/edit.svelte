@@ -3,7 +3,7 @@
     import Loader from "../../components/loader/loader.svelte"
     import { goto } from "@sapper/app"
     import storeAuth from "../../store/auth"
-    import { addStorageProfile, updateUser } from "../../firebase/function"
+    import { addStorageProfile, updateUser } from "../../firebase/user"
 
     let loading = false
     let error = ""

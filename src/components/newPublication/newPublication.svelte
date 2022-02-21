@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from "svelte"
-    import { addNewPublication } from "../../firebase/function";
+    import { addNewPublication } from "../../firebase/publication";
     import Slider from "./slider.svelte"
     import NewPStep2 from "./newPStep2.svelte"
     import Loader from "../loader/loader.svelte"

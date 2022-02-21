@@ -1,49 +1,10 @@
-import { doc, getDoc, setDoc, getDocs, query, collection, where, limit, orderBy, onSnapshot, deleteDoc } from "firebase/firestore"
+import { doc, getDoc, setDoc, getDocs, query, collection, where, limit, orderBy, deleteDoc } from "firebase/firestore"
 import { ref as sRef, uploadBytes, deleteObject, getDownloadURL } from "firebase/storage"
 import { db, storage } from "./firebase-config"
 import { v4 as uuid } from "uuid"
+import { getCurrentUser } from "./user"
 
 // ---- GET ----
-// Get data current user
-export const getCurrentUser = async (uid) => {
-    const collectionRef = await doc(db, "users", uid)
-    const docSnap = await getDoc(collectionRef)
-    let data = {}
-
-    if (docSnap.exists()) {
-        data = await docSnap.data()
-        data = {
-            ...data,
-            uid: docSnap.id
-        }
-    } 
-
-    return data
-}
-
-export const getFollowed = async (followedId, followerId) => {
-        const followRef = await collection(db, "follow")
-        const queryFollow = await query(followRef, where("followedId", "==", followedId))
-        const querySnapshot = await getDocs(queryFollow)
-        let id = ""
-    
-    try {
-        if (querySnapshot.size === 0) return id
-        else {
-            querySnapshot.forEach((item, index) => {
-                if (item.data().followerId === followerId) {
-                    id = item.id
-                    throw id
-                }
-
-                if (index === querySnapshot.size) throw id
-            })
-        }
-    } catch (message) {
-        return id
-    }
-}
-
 export const getFillAccount = async (uid) => {
     const collectionRef = await collection(db, "publications")
     const queryUid = await query(collectionRef, where("uid", "==", uid))
@@ -176,68 +137,29 @@ export const getComments = async (id) => {
     }
 }
 
-// ---- POST ----
-export const addUser = async (uid, email, name, username, birthday) => {
+export const addComment = async (id, data, dataPublication) => {
     try {
-        await setDoc(doc(db, "users", uid), {
-            email: email,
-            username: username,
-            name: name,
-            birthday: birthday,
-            publications: 0,
-            subscribers: 0,
-            subscriptions: 0,
-            description: "",
-            imgPath: "",
-            imgName: ""
-        })
-        return {
-            step: 4,
-            loading: false 
-        }   
-    } catch(err) {
-        alert("Error from server... Try later.")
-        return {
-            step: 1,
-            loading: false 
-        }         
-    }
-}
-
-export const addStorageProfile = async (ref, file, imgName, dataUser) => {
-    let newRef = ref + uuid()
-    let isDelete = false
-    const storageRef = sRef(storage, newRef)
-    const deleteRef = sRef(storage, ref + imgName)
+        const publicationRef = await doc(db, "publications", dataPublication.id)
+        const commentRef = await doc(db, "comments", id)
+        const commentDoc = await getDoc(commentRef)
+        const commentData = commentDoc.data()
     
-    if (imgName !== "") {
-        await deleteObject(deleteRef)
-            .then(() => isDelete = true)
-            .catch(() => isDelete = false)
-    }
-
-    // Error for delete
-    if (imgName !== "" && !isDelete) return false
-    else {
-        const upload = await uploadBytes(storageRef, file)
-        const url = await getDownloadURL(storageRef)
-
-        // Update users
-        const collectionRef = await doc(db, "users", dataUser.uid)
-
-        // Remove uid of object
-        delete dataUser.uid
-
-        await setDoc(collectionRef, {
-            ...dataUser,
-            imgPath: url,
-            imgName: upload.metadata.name,
+        await setDoc(commentRef, {
+            publicationId: commentData.publicationId,
+            peopleComment: [{
+                items: [...commentData.peopleComment[0].items, data]
+            }]
         })
+
+        await setDoc(publicationRef, dataPublication)
 
         return true
+    } catch {
+        return false
     }
 }
 
+// ---- POST ----
 export const addNewPublication = async (text, uid, arrFiles) => {
     let id = uuid()
     let date = Date.now()
@@ -307,78 +229,20 @@ export const addNewPublication = async (text, uid, arrFiles) => {
     
 }
 
-export const addComment = async (id, data, dataPublication) => {
-    try {
-        const publicationRef = await doc(db, "publications", dataPublication.id)
-        const commentRef = await doc(db, "comments", id)
-        const commentDoc = await getDoc(commentRef)
-        const commentData = commentDoc.data()
-    
-        await setDoc(commentRef, {
-            publicationId: commentData.publicationId,
-            peopleComment: [{
-                items: [...commentData.peopleComment[0].items, data]
-            }]
-        })
-
-        await setDoc(publicationRef, dataPublication)
-
-        return true
-    } catch {
-        return false
-    }
-}
-
-export const addFollow = async (followerId, followedId) => {
-    try {
-        const id = uuid()
-        const followerRef = await doc(db, "users", followerId)
-        const followedRef = await doc(db, "users", followedId)
-        const followRef = await doc(db, "follow", id)
-
-        await setDoc(followRef, {
-            followerId: followerId,
-            followedId: followedId
-        })
-
-        const followerData = (await getDoc(followerRef)).data()
-        const followedData = (await getDoc(followedRef)).data()
-
-        await setDoc(followerRef, {
-            ...followerData,
-            subscriptions: followerData.subscriptions + 1
-        })
-        await setDoc(followedRef, {
-            ...followedData,
-            subscribers : followerData.subscribers  + 1
-        })
-
-        return id
-    } catch {
-        return false
-    }
-}
-
 // ---- UPDATE ----
-export const updateUser = async (data) => {
-    const collectionRef = await doc(db, "users", data.uid)
-    await setDoc(collectionRef, data)
-    return
-}
-
 export const updateLike = async (data, peopleLike) => {
     const publicationRef = await doc(db, "publications", data.id)
     const likesRef = await collection(db, "likes")
     const queryLikes = await query(likesRef, where("publicationId", "==", data.id))
 
     // Like
-    const snapshot = onSnapshot(queryLikes, (item) => {
-        item.forEach(async (like) => {
-            const collectionRef = await doc(db, "likes", like.id)
-            await setDoc(collectionRef, {
-                publicationId: data.id,
-                peopleLike: peopleLike
-            })
+    const likes = await getDocs(queryLikes)
+
+    likes.forEach(async like => {
+        const docRef = await doc(db, "likes", like.id)
+        await setDoc(docRef, {
+            publicationId: data.id,
+            peopleLike: peopleLike
         })
     })
 
@@ -400,20 +264,23 @@ export const deletePublication = async (data) => {
 
         // Publication
         await deleteDoc(publicationRef)
-
+  
         // Likes
-        const snapshotLike = onSnapshot(queryLikes, (item) => {
-            item.forEach(async (like) => {
-                await deleteDoc(doc(db, "likes", like.id))
-            })
-        })
+        const likes = await getDocs(queryLikes)
+
+        likes.forEach(async like => {
+            const docRef = await doc(db, "likes", like.id)
+            await deleteDoc(docRef)
+        })    
+        
 
         // Comments
-        const snapshotComment = onSnapshot(queryComments, (item) => {
-            item.forEach(async (comment) => {
-                await deleteDoc(doc(db, "comments", comment.id))
-            })
-        })
+        const comments = await getDocs(queryComments)
+
+        comments.forEach(async comment => {
+            const docRef = await doc(db, "comments", comment.id)
+            await deleteDoc(docRef)
+        })   
 
         // User publication number
         delete data.user.uid
@@ -435,33 +302,6 @@ export const deletePublication = async (data) => {
         }
 
         return true
-    } catch {
-        return false
-    }
-}
-
-export const deleteFollow = async (followId, followerId, followedId) => {
-    // just return a typeof string
-
-    try {
-        const followerRef = await doc(db, "users", followerId)
-        const followedRef = await doc(db, "users", followedId)
-
-        const followerData = (await getDoc(followerRef)).data()
-        const followedData = (await getDoc(followedRef)).data()
-
-        await setDoc(followerRef, {
-            ...followerData,
-            subscriptions: followerData.subscriptions + 1
-        })
-        await setDoc(followedRef, {
-            ...followedData,
-            subscribers : followerData.subscribers  + 1
-        })
-
-        await deleteDoc(doc(db, "follow", followId))
-        
-        return ""
     } catch {
         return false
     }

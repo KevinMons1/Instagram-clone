@@ -12,7 +12,8 @@
     import PublicationGrid from "../../components/publicationGrid/publicationGrid.svelte"
     import Loader from "../../components/loader/loader.svelte"
     import storeAuth from "../../store/auth"
-    import { getCurrentUser, getFillAccount, getFollowed } from "../../firebase/function"
+    import { getFillAccount } from "../../firebase/publication"
+    import { getCurrentUser, getFollowed } from "../../firebase/user"
 
     export let accountUid;
     let actualAccountuid = accountUid

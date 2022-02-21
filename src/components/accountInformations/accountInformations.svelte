@@ -1,6 +1,6 @@
 <script>
     import { goto } from "@sapper/app"
-    import { addFollow, deleteFollow } from "../../firebase/function"
+    import { addFollow, deleteFollow } from "../../firebase/user"
     
     export let isUser
     export let data

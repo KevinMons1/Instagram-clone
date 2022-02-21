@@ -1,7 +1,7 @@
 import { writable } from "svelte/store"
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth"
 import { auth } from "../firebase/firebase-config"
-import { getCurrentUser } from "../firebase/function"
+import { getCurrentUser } from "../firebase/user"
 
 const customStore = () => {
     const isAuth = writable(null)

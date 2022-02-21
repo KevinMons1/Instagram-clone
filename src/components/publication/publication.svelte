@@ -4,7 +4,7 @@
     import moment from "moment"
     import Comment from "./comment.svelte"
     import CommentForm from "./commentForm.svelte"
-    import { updateLike } from "../../firebase/function"
+    import { updateLike } from "../../firebase/publication"
 
     export let comment = false
     export let data

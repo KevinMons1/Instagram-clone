@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher } from "svelte"
-    import { deletePublication } from "../../firebase/function"
+    import { deletePublication } from "../../firebase/publication"
 
     export let uid
     export let data

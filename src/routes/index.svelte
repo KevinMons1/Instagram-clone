@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from "svelte";
-	import { getFillAll } from "../firebase/function";
+	import { getFillAll } from "../firebase/publication";
 	import authStore from "../store/auth"
 	import Storys from "../components/storys/storys.svelte"
 	import Fill from "../components/fill/fill.svelte"
