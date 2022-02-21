@@ -1,22 +1,30 @@
 <script>
     import { goto } from "@sapper/app"
+    import moment from "moment"
+
+    export let data
 
     const handleClick = () => {
-        goto(`message/qsddqs`)
+        goto(`message/${data.roomId}`)
     }
-
 </script>
 
 <div class="userCard" on:click={handleClick}>
     <div class="userCard-left">
-        <img src="images/default-user.jpg" alt="">
+        <img src={data.imgPath === "" ? "images/default-user.jpg" : data.imgPath} alt="Profile user">
     </div>
     <div class="userCard-right">
-        <p class="userCard-name">Jonathan Zablot</p>
+        <p class="userCard-name">{data.username}</p>
         <div class="userCard-text">
-            <p>You: Salut comment...</p>
-            <span>.</span>
-            <small>2 hours ago</small>
+            {#if data.messages}
+                {#if data.messages.sender === data.uid}
+                    <p>{data.messages.message.substring(0, 10)}...</p>
+                {:else}
+                    <p>You: {data.messages.message.substring(0, 5)}...</p>
+                {/if}
+                    <span>.</span>
+                    <small>{moment(data.messages.date).fromNow()}</small>
+            {/if}
         </div>
     </div>
 </div>
@@ -34,7 +42,6 @@
     .userCard-left {
         width: 50px;
         height: 50px;
-        margin-right: 10px;
         border-radius: 50%;
         overflow: hidden;
     }
@@ -46,7 +53,7 @@
     }
 
     .userCard-right {
-        width: 100%;
+        margin-left: 10px;
     }
 
     .userCard-text p, small, span {

@@ -1,11 +1,61 @@
 <script>
+    import { onMount } from "svelte"
     import { goto } from "@sapper/app"
+    import storeAuth from "../../store/auth"
+    import { getRoom, addMessage } from "../../firebase/message"
     import Message from "./message.svelte"
+
+    export let roomId
+
+    let actualId = ""
+    let value = ""
+    let data = []
+    let uid
+    let antiSpam = false
+    let error = ""
+    let userData = {}
+
+    $: if (actualId !== roomId) handleLoad()
+    
+    onMount(async () => {
+        storeAuth.subscribe(value => {
+            uid = value.uid
+        })
+        handleLoad()
+    })
+    
+    const handleLoad = async () => {
+        userData = await getRoom(uid, roomId, (newData) => addData(newData))
+        actualId = roomId
+    }
+
+    const addData = (newData) => {
+        data = newData
+    }
 
     const handleBack = () => {
         goto("/message/inbox")
     }
+
+    const handleSubmit = async () => {
+        if (!antiSpam) {
+            antiSpam = true
+
+            await addMessage(roomId, value, uid)
+            value = ""
+
+            const intervalAntiSpam = setInterval(() => {
+                antiSpam = false
+                clearInterval(intervalAntiSpam)
+                error = ""
+            }, 100)
+        } else error = "Please do not spam 😉"
+    }
 </script>
+
+<svelte:head>
+	<title>Discusion with {userData.username}</title>
+</svelte:head>
 
 <div class="room-header">
     <button on:click={handleBack}>
@@ -13,33 +63,26 @@
             <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
         </svg>
     </button>
-    <div class="room-user-img">
-        <img src="images/default-user.jpg" alt="">
-    </div>
-    <p>Jonathan Zablot</p>
+    <a href={`account/${userData.uid}`}>
+        <div class="room-user-img">
+            <img src={userData.imgPath === "" ? "images/default-user.jpg" : userData.imgPath} alt="Profile user">
+        </div>
+        <p>{userData.username}</p>
+    </a>
 </div>
 <div class="room-content">
     <ul class="room-messages">
-        <Message isUser={true} data={null} />
-        <Message isUser={false} data={null} />
-        <Message isUser={true} data={null} />
-        <Message isUser={false} data={null} />
-        <Message isUser={false} data={null} />
-        <Message isUser={false} data={null} />
-        <Message isUser={true} data={null} />
-        <Message isUser={true} data={null} />
-        <Message isUser={false} data={null} />
-        <Message isUser={false} data={null} />
-        <Message isUser={true} data={null} />
-        <Message isUser={false} data={null} />
-        <Message isUser={false} data={null} />
-        <Message isUser={false} data={null} />
-        <Message isUser={true} data={null} />
+        {#each data as item}
+            <Message isUser={item.sender === uid} data={item} />
+        {/each}
     </ul>
     <div class="form-content">
-        <form>
-            <input type="text" placeholder="Your message...">
-            <button class="message-send">Send</button>
+        {#if error !== ""}
+            <p class="error-txt">{error}</p>
+        {/if}
+        <form on:submit|preventDefault={handleSubmit}>
+            <input bind:value={value} type="text" placeholder="Your message...">
+            <button type="submit" class="message-send">Send</button>
         </form>
     </div>
 </div>
@@ -51,6 +94,12 @@
         align-items: center;
         height: 60px;
         border-bottom: 1px solid #DBDBDB;
+    }
+
+    .room-header a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .room-header button {
@@ -79,6 +128,7 @@
 
     .room-header p {
         font-size: 1.4rem;
+        color: #000;
     }
 
     .room-content {
@@ -96,6 +146,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-direction: column;
         height: 60px;
         width: 100%;
     }

@@ -7,15 +7,15 @@ import { getCurrentUser } from "./user"
 // ---- GET ----
 export const getFillAccount = async (uid) => {
     const collectionRef = await collection(db, "publications")
-    const queryUid = await query(collectionRef, where("uid", "==", uid))
+    const queryPublications = await query(collectionRef, where("uid", "==", uid))
     let data = []
 
-    const querySnapshot = await getDocs(queryUid)
+    const publications = await getDocs(queryPublications)
 
-    querySnapshot.forEach(item => {
+    publications.forEach(element => {
         data.push({
-            ...item.data(),
-            id: item.id
+            ...element.data(),
+            id: element.id
         })
         data = data.reverse()
     })
@@ -29,14 +29,14 @@ export const getFillAll = async (date, limitNbr) => {
     const queryPublication = await query(collectionRef, where("date", "<", date), orderBy("date", "desc"), limit(limitNbr))
     let data = []
 
-    const querySnapshot = await getDocs(queryPublication)
+    const publications = await getDocs(queryPublication)
     
     // Data publication
-    querySnapshot.forEach(item => {
-        const itemData = item.data()
+    publications.forEach(element => {
+        const elementData = element.data()
         data.push({
-            ...itemData,
-            id: item.id
+            ...elementData,
+            id: element.id
         })
     })
     
@@ -71,10 +71,10 @@ export const getPublicationOne = async (id) => {
     let peopleLike = []
     
     // Data publication
-    const querySnapshot = await getDoc(collectionRef)
+    const publications = await getDoc(collectionRef)
     data = {
-        ...querySnapshot.data(),
-        id: querySnapshot.id
+        ...publications.data(),
+        id: publications.id
     }
     
     // Data user

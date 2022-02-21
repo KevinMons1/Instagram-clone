@@ -2,15 +2,16 @@
     import RoomEmpty from "./roomEmpty.svelte"
     import RoomFilled from "./roomFilled.svelte"
 
-    export let data
-    export let inboxPage = false
+    export let inboxPage
+    export let roomId
+    export let friendId
 </script>
 
 <section class="room">
     {#if inboxPage}
         <RoomEmpty />
     {:else}
-        <RoomFilled data={data} />
+        <RoomFilled roomId={roomId} />
     {/if}
 </section>
 

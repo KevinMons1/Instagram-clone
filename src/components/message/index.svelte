@@ -3,10 +3,9 @@
     import Room from "../../components/message/room.svelte"
     import Inbox from "../../components/message/inbox.svelte"
 
-    export let friendId
+    export let roomId
     export let inboxPage
     export let uid
-    
 
     let minWidth = window.matchMedia("(min-width: 768px)").matches
     
@@ -21,16 +20,15 @@
 </script>
 
 <div class={minWidth ? "message minWidth" : "message maxWidth"}>
-    {#if inboxPage}
+    {#if minWidth}
         <Inbox uid={uid} minWidth={minWidth} />
-        {#if minWidth}
-            <Room inboxPage={inboxPage} />
-        {/if}
+        <Room roomId={roomId} inboxPage={inboxPage} />
     {:else}
-        {#if minWidth}
+        {#if inboxPage}
             <Inbox uid={uid} minWidth={minWidth} />
+        {:else}
+            <Room roomId={roomId} inboxPage={inboxPage} />
         {/if}
-        <Room friendId={friendId} inboxPage={inboxPage} />
     {/if}
 </div>
 

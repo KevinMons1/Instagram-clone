@@ -11,16 +11,28 @@
     import Index from "../../components/message/index.svelte"
 
     export let id
-
+    
     let uid
+    let inboxPage = true
+    let actualId = ""
 
-    onMount(async () => {
+    $: if (actualId !== id) handleLoad()
+
+    onMount(() => {
         storeAuth.subscribe(value => {
             uid = value.uid
         })
+        handleLoad()
     })
+    
+    const handleLoad = () => {
+        if (id === "inbox") inboxPage = true
+        else inboxPage = false
+        
+        actualId = id
+    }
 </script>
 
-{#if uid !== ""}
-    <Index friendId={id} uid={uid} inboxPage={true} />
+{#if uid}
+    <Index roomId={id} uid={uid} inboxPage={inboxPage} />
 {/if}

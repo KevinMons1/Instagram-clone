@@ -27,7 +27,7 @@
         if (step === 3) {
             storeAuth.signUp(email, password)
                 .then(res => {
-                    addUser(res.user.uid, email, name, username, birthday)
+                    addUser(res.user.uid, email, name, username.toLocaleLowerCase(), birthday)
                 })
                 .catch(err => {
                     if (err.code === "auth/email-already-in-use") {

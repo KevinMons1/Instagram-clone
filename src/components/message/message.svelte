@@ -1,10 +1,13 @@
 <script>
+    import moment from "moment"
+
     export let isUser
+    export let data
 </script>
 
 <li class={isUser ? "message message-right" : "message message-left"}>
-    <small>2 hours ago</small>
-    <p class={isUser ? "text-user" : "text-notuser"}>loremlorem loremlorem loremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremloremlorem </p>
+    <small>{moment(data.date).fromNow()}</small>
+    <p class={isUser ? "text-user" : "text-notuser"}>{data.message}</p>
 </li>
 
 <style>

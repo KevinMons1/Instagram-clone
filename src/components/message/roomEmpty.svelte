@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>Your inbox</title>
+</svelte:head>
+
 <div class="room-content">
     <div class="room-img">
         <svg color="#262626" fill="#262626" role="img" viewBox="0 0 24 24" >
