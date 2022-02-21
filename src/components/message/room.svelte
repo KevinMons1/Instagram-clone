@@ -4,7 +4,6 @@
 
     export let inboxPage
     export let roomId
-    export let friendId
 </script>
 
 <section class="room">

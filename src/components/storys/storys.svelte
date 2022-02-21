@@ -57,11 +57,26 @@
         max-width: 100vw;
         padding-left: 20px;
         margin: 0 10px;
-        border-bottom: 1px solid #DBDBDB;
-        overflow-y: auto;
+        overflow-x: auto;
+    }
+
+    .storys::-webkit-scrollbar {
+        display: none;
+    }
+
+    .storys {
+        -ms-overflow-style: none; 
+        scrollbar-width: none; 
     }
 
     .storys li {
         list-style: none;
+    }
+
+    @media screen and (min-width: 768px) {
+        .storys {        
+            margin: 20px 0;
+            border: 1px solid #DBDBDB;
+        }
     }
 </style>

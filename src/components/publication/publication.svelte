@@ -199,6 +199,7 @@
 
 <style>
     .publication {
+        margin: 20px 0;
         padding: 20px 0;
         width: 100%;
     }
@@ -253,10 +254,28 @@
         overflow-x: auto;
     }
 
+    .publication::-webkit-scrollbar {
+        display: none;
+    }
+
+    .publication {
+        -ms-overflow-style: none; 
+        scrollbar-width: none; 
+    }
+
     .publication-img {
         display: flex;  
         scroll-snap-type: x mandatory;
         overflow-x: auto;
+    }
+
+    .publication-img::-webkit-scrollbar {
+        display: none;
+    }
+
+    .publication-img {
+        -ms-overflow-style: none; 
+        scrollbar-width: none; 
     }
 
     .publication-img div {
@@ -352,6 +371,12 @@
     .anyComment {
         margin-top: 10px;
         font-size: 1.4rem;
+    }
+
+    @media screen and (min-width: 768px) {
+        .publication {        
+            border: 1px solid #DBDBDB;
+        }
     }
 
 </style>
