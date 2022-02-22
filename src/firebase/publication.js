@@ -138,6 +138,7 @@ export const getComments = async (id) => {
 }
 
 export const addComment = async (id, data, dataPublication) => {
+    let result = true
     try {
         const publicationRef = await doc(db, "publications", dataPublication.id)
         const commentRef = await doc(db, "comments", id)
@@ -153,10 +154,11 @@ export const addComment = async (id, data, dataPublication) => {
 
         await setDoc(publicationRef, dataPublication)
 
-        return true
+        result =  true
     } catch {
-        return false
+        result = false
     }
+    return result
 }
 
 // ---- POST ----
