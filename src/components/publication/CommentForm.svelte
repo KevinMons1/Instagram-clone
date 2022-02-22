@@ -8,38 +8,40 @@
 
     const dispatch = createEventDispatcher()
     let error = ""
-    let data = ""
+    let value = ""
 
     const handleSubmit = async () => {
+        let newComment = {}
+        let newDataPublication = {}
         error = ""
 
-        if (data.length <= 250) {
-            const newComment = {
+        if (value.length <= 250) {
+            newComment = {
                 uid: uid,
-                text: data,
+                text: value,
                 date: Date.now()
             }
 
-            dataPublication = {
+            newDataPublication = {
                 ...dataPublication,
                 comments: dataPublication.comments + 1
             }
 
-            const result = await addComment(cid, newComment, dataPublication)
+            const result = await addComment(cid, newComment, newDataPublication)
 
-            data = ""
+            value = ""
             
             if (result) {
                 dispatch("new-comment", newComment)
             } else error = "Error from server... Try later."
-        } else error = "Your message is too long. Maximum 250 characters"
+        } else error = "Your message is too long. Maximum 250 characters."
     }
 </script>
 
 <aside class="comment-form">
     <form class="form-content" on:submit|preventDefault={handleSubmit}>
-        <input bind:value={data} type="text" placeholder="Add a comment...">
-        <button type="submit">Publier</button>
+        <input bind:value={value} type="text" placeholder="Add a comment...">
+        <button type="submit">Publish</button>
     </form>
     {#if error !== ""}
         <p class="error-txt">{error}</p>
@@ -49,17 +51,17 @@
 <style>
     .comment-form {
         position: fixed;
-        z-index: 10;
         bottom: 0;
         right: 0;
         left: 0;
-        min-height: 60px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
+        min-height: 60px;
         padding: 5px 20px;
         background-color: #EFEFEF;
+        z-index: 10;
     }
 
     .form-content {
