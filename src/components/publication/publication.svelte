@@ -109,9 +109,9 @@
 </script>
 
 <article class="publication">
-    {#if comment}
+    <!-- {#if comment}
         <CommentForm on:new-comment={handleComment} dataPublication={data.publication} cid={data.publication.peopleComment.id} uid={uid} />
-    {/if}
+    {/if} -->
     <div class="publication-top">
         <a href={`/account/${data.user.uid}`}>
             <div>
