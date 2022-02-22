@@ -1,10 +1,9 @@
 <script>
     import { createEventDispatcher } from "svelte"
+    import { updateLike, addComment } from "../../firebase/publication"
     import storeAuth from "../../store/auth" 
     import moment from "moment"
     import Comment from "./comment.svelte"
-    import CommentForm from "./commentForm.svelte"
-    import { updateLike } from "../../firebase/publication"
 
     export let comment = false
     export let data
@@ -15,6 +14,8 @@
     let slide
     let bubbles = []
     let isLike = data.publication.peopleLike.find(like => like === uid) ? true : false
+    let error = ""
+    let value = ""
 
     const seeMore = () => {
         descriptionComplet = !descriptionComplet
@@ -65,7 +66,7 @@
         updateLike(newData.publication, peopleLike)
     }
 
-    const handleComment = (e) => {
+    const handleComment = (comments) => {
         let userData = {}
 
         storeAuth.subscribe(value => {
@@ -81,7 +82,7 @@
                     comments:  [
                         ...data.publication.peopleComment.comments,
                         {
-                            comment: e.detail,
+                            comment: comments,
                             user: {
                                 username: userData.username,
                                 uid: userData.uid,
@@ -106,11 +107,46 @@
         })
     }
 
+    const handleSubmit = async () => {
+        let newComment = {}
+        let newDataPublication = {}
+        error = ""
+
+        if (value.length <= 250) {
+            newComment = {
+                uid: uid,
+                text: value,
+                date: Date.now()
+            }
+
+            newDataPublication = {
+                ...data.publication,
+                comments: data.publication.comments + 1
+            }
+
+            const result = await addComment(data.publication.peopleComment.id, newComment, newDataPublication)
+
+            value = ""
+            
+            if (result) {
+                handleComment(newComment)
+            } else error = "Error from server... Try later."
+        } else error = "Your message is too long. Maximum 250 characters."
+    }
+
 </script>
 
 <article class="publication">
     {#if comment}
-        <CommentForm on:new-comment={handleComment} dataPublication={data.publication} cid={data.publication.peopleComment.id} uid={uid} />
+        <aside class="comment-form">
+            <form class="form-content" on:submit|preventDefault={handleSubmit}>
+                <input bind:value={value} type="text" placeholder="Add a comment...">
+                <button type="submit">Publish</button>
+            </form>
+            {#if error !== ""}
+                <p class="error-txt">{error}</p>
+            {/if}
+        </aside>
     {/if}
     <div class="publication-top">
         <a href={`/account/${data.user.uid}`}>
@@ -371,6 +407,55 @@
     .anyComment {
         margin-top: 10px;
         font-size: 1.4rem;
+    }
+
+    /* Form comment */
+
+    .comment-form {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        min-height: 60px;
+        padding: 5px 20px;
+        background-color: #EFEFEF;
+        z-index: 10;
+    }
+
+    .form-content {
+        display: flex;
+        width: 100%;
+        height: 44px;
+        padding: 10px 20px;
+        background-color: #fff;
+        border-radius: 25px;
+        font-size: 1.4rem;
+    }
+
+    .form-content input {
+        width: 100%;
+        border: none;
+        background: none;
+        font-size: 1.4rem;
+        outline: none;
+    }
+
+    .form-content button {
+        margin: 0 10px;
+        border: none;
+        background: none;
+        color: #0095f6;
+        font-size: 1.4rem;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .error-txt {
+        margin-top: 5px;
     }
 
     @media screen and (min-width: 768px) {
