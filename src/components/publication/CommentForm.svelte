@@ -6,7 +6,7 @@
     export let cid
     export let dataPublication
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher()
     let error = ""
     let data = ""
 

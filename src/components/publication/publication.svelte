@@ -3,6 +3,7 @@
     import storeAuth from "../../store/auth" 
     import moment from "moment"
     import Comment from "./comment.svelte"
+    import CommentForm from "./commentForm.svelte"
     import { updateLike } from "../../firebase/publication"
 
     export let comment = false
@@ -108,6 +109,9 @@
 </script>
 
 <article class="publication">
+    {#if comment}
+        <CommentForm on:new-comment={handleComment} dataPublication={data.publication} cid={data.publication.peopleComment.id} uid={uid} />
+    {/if}
     <div class="publication-top">
         <a href={`/account/${data.user.uid}`}>
             <div>

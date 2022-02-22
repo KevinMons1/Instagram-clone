@@ -19,7 +19,7 @@
 {/if}
 <div class="fill">
     {#each data as item (item.publication.id)}
-        <Publication on:options={handleOptions} data={item} uid={uid} />
+        <Publication on:options={handleOptions} comment={false} data={item} uid={uid} />
     {/each}
 </div>
 
