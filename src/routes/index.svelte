@@ -60,7 +60,7 @@
 	<title>Home</title>
 </svelte:head>
 
-<Storys />
+<!-- <Storys /> -->
 {#if data.length > 0}
 	<Fill on:get-more={getMore} data={data} uid={uid} />
 	{#if maximum}

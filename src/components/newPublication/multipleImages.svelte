@@ -1,6 +1,5 @@
 <script>
     import { createEventDispatcher } from "svelte"
-    import { v4 as uuid } from "uuid"
     
     export let srcs
     
@@ -25,7 +24,7 @@
     <div class="multiple-content">
         <div class="multiple-bg"></div>
         <div class="multiple-box">
-            {#each srcs as src, index (uuid())}
+            {#each srcs as src, index}
                 <div class="image-box">
                     <button class="close" on:click={() => handleDelete(index)}>
                         <svg aria-label="delete image" color="#ffffff" fill="#ffffff" height="12" role="img" viewBox="0 0 24 24" width="12"><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="3" y2="21"></line><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="21" x2="3" y1="21" y2="3"></line></svg>
