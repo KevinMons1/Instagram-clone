@@ -8,8 +8,6 @@
     export let isFollow = ""
     let antiSpam = 0
 
-    console.log(isFollow);
-
     const handleFollow = async () => {
         if (antiSpam <= 3) {
             antiSpam++

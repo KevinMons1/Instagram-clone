@@ -44,7 +44,6 @@
                         if ((isImage && file.size <= 1000000) || (isVideo && file.size <= 5000000)) { // 1mb image | 5mb video
                             imageCompression(file, options)
                                 .then(compressedFile => {
-                                    console.log(file, compressedFile);
                                     arrFiles = [...arrFiles, compressedFile]
                                     files = null
                                 })
@@ -78,8 +77,6 @@
     const handleSubmit = async () => {
         if (step === 3) {
             let response = await addNewPublication(data.text, uid, arrFiles)
-
-            console.log(response);
 
             if (!response) error = "Error server..."
             location.reload()

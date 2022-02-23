@@ -4,6 +4,7 @@
     import { goto } from "@sapper/app"
     import storeAuth from "../../store/auth"
     import { addStorageProfile, updateUser } from "../../firebase/user"
+    import imageCompression from "browser-image-compression"
 
     let loading = false
     let error = ""
@@ -14,6 +15,10 @@
     let uploadFile = false
     let dataCopy = {}
     let data = {}
+    let options = {
+        maxSizeMB: 0.05,
+        maxWidthOrHeight: 300,
+    }
 
     $: files !== null ? handleFile() : null
 
@@ -34,11 +39,12 @@
                                 if (uploadFile && files && files[0]) {
                                     // Files
                                     let file = files[0]
-                                    reader.readAsDataURL(file) // display image
-                                    const upload = await addStorageProfile("/images/profiles/", file, data.imgName, data) 
-                                    if (upload) dataCopy.uid ? goto(`account/${dataCopy.uid}`) : goto(`/`)
-                                    else createError(2, "Error from server... Try later.")
-
+                                    imageCompression(file, options)
+                                        .then(async compressedFile => {
+                                            const upload = await addStorageProfile("/images/profiles/", compressedFile, data.imgName, data) 
+                                            if (upload) dataCopy.uid ? goto(`account/${dataCopy.uid}`) : goto(`/`)
+                                            else createError(2, "Error from server... Try later.")
+                                        })
                                 } else {
                                     // Informations user
                                     await updateUser(data)
@@ -59,6 +65,7 @@
             if (file.type.includes("image/")) {
                 if (file.type.includes("/jpg") || file.type.includes("/jpeg") || file.type.includes("/png") || file.type.includes("/gif")) {
                     if (file.size <= 1000000) { // 1mb
+                        reader.readAsDataURL(file)
                         return uploadFile = true
                     } createError(1, "Your image is too heavy. It must be less of 1Mb.")  
                 } createError(1, "Bad format. Use only jpg, jpeg, png or gif.")

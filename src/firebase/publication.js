@@ -141,28 +141,6 @@ export const getComments = async (id) => {
     }
 }
 
-export const addComment = async (id, data, dataPublication) => {
-    try {
-        const publicationRef = await doc(db, "publications", dataPublication.id)
-        const commentRef = await doc(db, "comments", id)
-        const commentDoc = await getDoc(commentRef)
-        const commentData = commentDoc.data()
-    
-        await setDoc(commentRef, {
-            publicationId: commentData.publicationId,
-            peopleComment: [{
-                items: [...commentData.peopleComment[0].items, data]
-            }]
-        })
-
-        await setDoc(publicationRef, dataPublication)
-
-        return true
-    } catch {
-        return false
-    }
-}
-
 // ---- POST ----
 export const addNewPublication = async (text, uid, arrFiles) => {
     let id = uuid()
@@ -231,6 +209,28 @@ export const addNewPublication = async (text, uid, arrFiles) => {
         return true
     }
     return false
+}
+
+export const addComment = async (id, data, dataPublication) => {
+    try {
+        const publicationRef = await doc(db, "publications", dataPublication.id)
+        const commentRef = await doc(db, "comments", id)
+        const commentDoc = await getDoc(commentRef)
+        const commentData = commentDoc.data()
+    
+        await setDoc(commentRef, {
+            publicationId: commentData.publicationId,
+            peopleComment: [{
+                items: [...commentData.peopleComment[0].items, data]
+            }]
+        })
+
+        await setDoc(publicationRef, dataPublication)
+
+        return true
+    } catch {
+        return false
+    }
 }
 
 // ---- UPDATE ----
