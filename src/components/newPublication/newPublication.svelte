@@ -1,6 +1,7 @@
 <script>
     import { createEventDispatcher } from "svelte"
     import { addNewPublication } from "../../firebase/publication";
+    import imageCompression from "browser-image-compression"
     import Slider from "./slider.svelte"
     import NewPStep2 from "./newPStep2.svelte"
     import Loader from "../loader/loader.svelte"
@@ -12,6 +13,11 @@
     let files = null
     let arrFiles = []
     let titleNext = "Next"
+    let options = {
+        maxSizeMB: 0.1,
+        maxWidthOrHeight: 1200,
+        useWebWorker: true
+    }
     let data = {
         text: ""
     }
@@ -36,8 +42,13 @@
                 if (isImage || isVideo) {
                     if (file.type.includes("/jpg") || file.type.includes("/jpeg") || file.type.includes("/png") || file.type.includes("/gif") || file.type.includes("/mp4") || file.type.includes("/mov") || file.type.includes("/avi")) {
                         if ((isImage && file.size <= 1000000) || (isVideo && file.size <= 5000000)) { // 1mb image | 5mb video
-                            arrFiles = [...arrFiles, file]
-                            files = null
+                            imageCompression(file, options)
+                                .then(compressedFile => {
+                                    console.log(file, compressedFile);
+                                    arrFiles = [...arrFiles, compressedFile]
+                                    files = null
+                                })
+                               .catch(() => error = "Error with your file... Try later.")
                         } else error = "Your image is too heavy. It must be less of 1Mb."
                     } else error = "Bad format. Use only jpg, jpeg, png or gif."
                 } else error = "It is not a image or video."
@@ -67,6 +78,8 @@
     const handleSubmit = async () => {
         if (step === 3) {
             let response = await addNewPublication(data.text, uid, arrFiles)
+
+            console.log(response);
 
             if (!response) error = "Error server..."
             location.reload()

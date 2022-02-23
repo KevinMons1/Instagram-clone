@@ -8,6 +8,7 @@
 
 <script>
     import { onMount } from "svelte"
+    import { goto } from "@sapper/app"
     import authStore from "../../store/auth"
     import { getPublicationOne, getComments } from "../../firebase/publication"
     import Publication from "../../components/publication/publication.svelte"
@@ -24,19 +25,22 @@
 
     onMount(async () => {
         const publication = await getPublicationOne(id)
-        const comments = await getComments(id)
-
-        data = {
-            user: publication.user,
-            publication: {
-                ...publication.publication,
-                peopleComment: comments
+        if (publication.publication) {
+            const comments = await getComments(id)
+    
+            data = {
+                user: publication.user,
+                publication: {
+                    ...publication.publication,
+                    peopleComment: comments
+                }
             }
-        }
-        
-		authStore.subscribe(value => {
-			uid = value.uid
-		})
+    
+            
+            authStore.subscribe(value => {
+                uid = value.uid
+            })
+        } else goto("/")
 	})
 
     const interval = setInterval(() => {

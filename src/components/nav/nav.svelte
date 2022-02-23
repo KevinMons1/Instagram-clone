@@ -15,6 +15,10 @@
 		active = url
 	}
 
+	const handleLogout = () => {
+		storeAuth.signOut()
+	}
+
 	onMount(() => {
 		storeAuth.subscribe(value => {
 			uid = value.uid
@@ -72,6 +76,11 @@
 				<a href={`/account/${uid}`} on:click={() => changePathname("/account")} class="navbar-img">
 					<img src={src !== "" ? src : "images/default-user.jpg"} alt="My Account">
 				</a>
+			</li>
+			<li>
+				<button class="logout" on:click={handleLogout}>
+					<svg version="1.1" x="0px" y="0px" viewBox="0 0 384.971 384.971" style="enable-background:new 0 0 384.971 384.971;" xml:space="preserve"><g><g id="Sign_Out"><path d="M180.455,360.91H24.061V24.061h156.394c6.641,0,12.03-5.39,12.03-12.03s-5.39-12.03-12.03-12.03H12.03C5.39,0.001,0,5.39,0,12.031V372.94c0,6.641,5.39,12.03,12.03,12.03h168.424c6.641,0,12.03-5.39,12.03-12.03C192.485,366.299,187.095,360.91,180.455,360.91z"/><path d="M381.481,184.088l-83.009-84.2c-4.704-4.752-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l62.558,63.46H96.279c-6.641,0-12.03,5.438-12.03,12.151c0,6.713,5.39,12.151,12.03,12.151h247.74l-62.558,63.46c-4.704,4.752-4.704,12.439,0,17.179c4.704,4.752,12.319,4.752,17.011,0l82.997-84.2C386.113,196.588,386.161,188.756,381.481,184.088z"/></g><g></g><g></g><g></g><g></g><g></g><g></g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg>
+				</button>
 			</li>
 		</ul>
 	</div>
@@ -135,6 +144,11 @@
 		height: 100%;
 		width: 100%;
 		object-fit: cover;
+	}
+
+	.logout svg {
+		width: 20px;
+		height: 20px;
 	}
 
 	@media screen and (max-width: 380px) {

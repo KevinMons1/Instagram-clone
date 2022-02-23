@@ -2,7 +2,7 @@ import { doc, getDoc, setDoc, getDocs, query, collection, where, limit, orderBy,
 import { ref as sRef, uploadBytes, deleteObject, getDownloadURL } from "firebase/storage"
 import { db, storage } from "./firebase-config"
 import { v4 as uuid } from "uuid"
-import { getCurrentUser } from "./user"
+import { getCurrentUser, updateUser } from "./user"
 
 // ---- GET ----
 export const getFillAccount = async (uid) => {
@@ -65,36 +65,40 @@ export const getFillAll = async (date, limitNbr) => {
 }
 
 export const getPublicationOne = async (id) => {
-    const likesRef = await collection(db, "likes")
-    const collectionRef = await doc(db, "publications", id)
     let data = {}
-    let peopleLike = []
+    try {
+        const likesRef = await collection(db, "likes")
+        const collectionRef = await doc(db, "publications", id)
+        let peopleLike = []
+        
+        // Data publication
+        const publications = await getDoc(collectionRef)
+        data = {
+            ...publications.data(),
+            id: publications.id
+        }
+        
+        // Data user
+        const userData = await getCurrentUser(data.uid)
+        const queryLikes = await query(likesRef, where("publicationId", "==", data.id))
+        const likesData = await getDocs(queryLikes)
+        
+        likesData.forEach(like => {
+            peopleLike = like.data().peopleLike
+        })
+        
+        data = {
+            publication: {
+                ...data,
+                peopleLike: peopleLike
+            },
+            user: userData
+        }
     
-    // Data publication
-    const publications = await getDoc(collectionRef)
-    data = {
-        ...publications.data(),
-        id: publications.id
+        return data
+    } catch {
+        return data
     }
-    
-    // Data user
-    const userData = await getCurrentUser(data.uid)
-    const queryLikes = await query(likesRef, where("publicationId", "==", data.id))
-    const likesData = await getDocs(queryLikes)
-    
-    likesData.forEach(like => {
-        peopleLike = like.data().peopleLike
-    })
-    
-    data = {
-        publication: {
-            ...data,
-            peopleLike: peopleLike
-        },
-        user: userData
-    }
-
-    return data
 }
 
 export const getComments = async (id) => {
@@ -225,8 +229,8 @@ export const addNewPublication = async (text, uid, arrFiles) => {
         })
 
         return true
-    } else return false
-    
+    }
+    return false
 }
 
 // ---- UPDATE ----

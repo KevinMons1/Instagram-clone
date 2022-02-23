@@ -14,6 +14,7 @@ const customStore = () => {
         signIn: (email, password) => {
             return signInWithEmailAndPassword(auth, email, password)
         },
+        signOut: () => auth.signOut(),
         currentUser: () => {
             onAuthStateChanged(auth, async (user) => {
                 if (user) {

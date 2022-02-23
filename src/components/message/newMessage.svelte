@@ -20,6 +20,7 @@
     const handleClick = async (friendId) => {
         const roomId = await addRoom(uid, friendId)
         goto(`message/${roomId}`)
+        dispatch("close")
     }
 
     const handleClose = () => {

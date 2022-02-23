@@ -5,8 +5,10 @@
     export let isUser
     export let data
     export let uid
-    export let isFollow
+    export let isFollow = ""
     let antiSpam = 0
+
+    console.log(isFollow);
 
     const handleFollow = async () => {
         if (antiSpam <= 3) {
@@ -15,8 +17,6 @@
             
             if (isFollow) result = await deleteFollow(isFollow, uid, data.uid)
             else result = await addFollow(uid, data.uid)
-
-            console.log(result);
             
             if (typeof result === "string") isFollow = result
             else alert("Error from server...")
