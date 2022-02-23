@@ -62,7 +62,7 @@
         data = newData
 
         delete newData.publication.peopleLike
-
+        
         updateLike(newData.publication, peopleLike)
     }
 

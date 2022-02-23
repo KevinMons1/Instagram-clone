@@ -238,7 +238,7 @@ export const updateLike = async (data, peopleLike) => {
     const publicationRef = await doc(db, "publications", data.id)
     const likesRef = await collection(db, "likes")
     const queryLikes = await query(likesRef, where("publicationId", "==", data.id))
-
+    
     // Like
     const likes = await getDocs(queryLikes)
 

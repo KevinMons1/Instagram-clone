@@ -21,7 +21,6 @@
     }
 
     $: files !== null ? handleFile() : null
-
     
     const handleSubmit = async () => {
         const { name, username, description } = data
@@ -42,12 +41,14 @@
                                     imageCompression(file, options)
                                         .then(async compressedFile => {
                                             const upload = await addStorageProfile("/images/profiles/", compressedFile, data.imgName, data) 
+                                            location.reload()
                                             if (upload) dataCopy.uid ? goto(`account/${dataCopy.uid}`) : goto(`/`)
                                             else createError(2, "Error from server... Try later.")
                                         })
                                 } else {
                                     // Informations user
                                     await updateUser(data)
+                                    location.reload()
                                     dataCopy.uid ? goto(`account/${dataCopy.uid}`) : goto(`/`)
                                 }
                             } else createError(3, "Your username is invalid")

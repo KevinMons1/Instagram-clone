@@ -6,7 +6,7 @@
 	import Fill from "../components/fill/fill.svelte"
 	import Loader from "../components/loader/loader.svelte"
 
-	let uid = {}
+	let uid
 	let data = []
 	let limit = 10
 	let offset = 10

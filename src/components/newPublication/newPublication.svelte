@@ -41,13 +41,18 @@
 
                 if (isImage || isVideo) {
                     if (file.type.includes("/jpg") || file.type.includes("/jpeg") || file.type.includes("/png") || file.type.includes("/gif") || file.type.includes("/mp4") || file.type.includes("/mov") || file.type.includes("/avi")) {
-                        if ((isImage && file.size <= 1000000) || (isVideo && file.size <= 5000000)) { // 1mb image | 5mb video
-                            imageCompression(file, options)
-                                .then(compressedFile => {
-                                    arrFiles = [...arrFiles, compressedFile]
-                                    files = null
-                                })
-                               .catch(() => error = "Error with your file... Try later.")
+                        if ((isImage && file.size <= 10000000) || (isVideo && file.size <= 10000000)) { // 10mb image | 10mb video
+                            if (isImage) {
+                                imageCompression(file, options)
+                                    .then(compressedFile => {
+                                        arrFiles = [...arrFiles, compressedFile]
+                                        files = null
+                                    })
+                                .catch(() => error = "Error with your file... Try later.")
+                            } else {
+                                arrFiles = [...arrFiles, file]
+                                files = null
+                            }
                         } else error = "Your image is too heavy. It must be less of 1Mb."
                     } else error = "Bad format. Use only jpg, jpeg, png or gif."
                 } else error = "It is not a image or video."
