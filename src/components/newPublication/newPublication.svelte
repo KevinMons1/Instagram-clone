@@ -14,7 +14,7 @@
     let arrFiles = []
     let titleNext = "Next"
     let options = {
-        maxSizeMB: 0.1,
+        maxSizeMB: 0.15,
         maxWidthOrHeight: 1200,
         useWebWorker: true
     }

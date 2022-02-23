@@ -64,10 +64,10 @@
 
             if (file.type.includes("image/")) {
                 if (file.type.includes("/jpg") || file.type.includes("/jpeg") || file.type.includes("/png") || file.type.includes("/gif")) {
-                    if (file.size <= 1000000) { // 1mb
+                    if (file.size <= 10000000) {
                         reader.readAsDataURL(file)
                         return uploadFile = true
-                    } createError(1, "Your image is too heavy. It must be less of 1Mb.")  
+                    } createError(1, "Your image is too heavy. It must be less of 10Mb.")  
                 } createError(1, "Bad format. Use only jpg, jpeg, png or gif.")
             } createError(1, "It is not a image.")  
         }
