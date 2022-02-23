@@ -112,6 +112,7 @@
         let newDataPublication = {}
         error = ""
 
+       if (value.length > 0) {
         if (value.length <= 250) {
             newComment = {
                 uid: uid,
@@ -132,6 +133,7 @@
                 handleComment(newComment)
             } else error = "Error from server... Try later."
         } else error = "Your message is too long. Maximum 250 characters."
+       } else error = "Your message is empty."
     }
 
 </script>
@@ -224,7 +226,7 @@
                     <p class="anyComment">Any comment...</p>
                 {/if}
             {:else if data.publication.comments > 0}
-                <a href="/publication/id">Show the {data.publication.comments > 1 ? data.publication.comments + " comments" : data.publication.comments + " comment"}</a>
+                <a href={`/publication/${publication.id}`}>Show the {data.publication.comments > 1 ? data.publication.comments + " comments" : data.publication.comments + " comment"}</a>
             {/if}
         </div>
         {#if !comment}
