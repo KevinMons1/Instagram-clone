@@ -223,10 +223,10 @@
                         <Comment data={item} />
                     {/each}
                 {:else}
-                    <p class="anyComment">Any comment...</p>
+                    <p class="anyComment">Any comment ...</p> 
                 {/if}
             {:else if data.publication.comments > 0}
-                <a href={`/publication/${publication.id}`}>Show the {data.publication.comments > 1 ? data.publication.comments + " comments" : data.publication.comments + " comment"}</a>
+                <a href={`/publication/${data.publication.id}`}>Show the {data.publication.comments > 1 ? data.publication.comments + " comments" : data.publication.comments + " comment"}</a>
             {/if}
         </div>
         {#if !comment}
