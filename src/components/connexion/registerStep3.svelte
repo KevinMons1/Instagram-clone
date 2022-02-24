@@ -4,17 +4,21 @@
     
     const dispatch = createEventDispatcher()
     let error = ""
+    let disabled = true
+    let prevent = true
+    let submit
     let data = {
         birthday: birthday
     }
-    let disabled = true
 
     $: data.birthday !== "" ? disabled = false : disabled = true
 
-    const nextStep = () => {
+    const nextStep = (e) => {
+        if (prevent) e.preventDefault()
+
         if (data.birthday !== "") {
             let birthday = new Date(data.birthday)
-            // console.log(birthday);
+
             //calculate month difference from current date in time  
             var month_diff = Date.now() - birthday.getTime();  
 
@@ -27,10 +31,13 @@
             //now calculate the age of the user  
             var age = Math.abs(year - 1970);  
 
+            console.log(age);
+
             if (age >= 13) {
+                prevent = false
+                submit.click()
                 dispatch("next-step", data)
             } else error = "You must be over 13 years old."
-
         } else error = "Your birthday is invalid."
     }
 
@@ -41,7 +48,7 @@
 {#if error !== ""}
     <small class="error-txt">{error}</small>
 {/if}
-<button disabled={disabled} class={disabled ? "disabled" : ""} type="submit" on:click={nextStep}>Next</button>
+<button bind:this={submit} disabled={disabled} class={disabled ? "disabled" : ""} type="submit" on:click={nextStep}>Next</button>
 
 <style>
     input {

@@ -222,8 +222,6 @@
                     {#each data.publication.peopleComment.comments as item}
                         <Comment data={item} />
                     {/each}
-                {:else}
-                    <p class="anyComment">Any comment ...</p> 
                 {/if}
             {:else if data.publication.comments > 0}
                 <a href={`/publication/${data.publication.id}`}>Show the {data.publication.comments > 1 ? data.publication.comments + " comments" : data.publication.comments + " comment"}</a>
@@ -292,28 +290,30 @@
         overflow-x: auto;
     }
 
-    .publication::-webkit-scrollbar {
-        display: none;
+    .publication-img::-webkit-scrollbar {
+        height: 3px;
     }
 
-    .publication {
-        -ms-overflow-style: none; 
-        scrollbar-width: none; 
+    /* Track */
+    .publication-img::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    .publication-img::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+
+    /* Handle on hover */
+    .publication-img::-webkit-scrollbar-thumb:hover {
+        background: #555;
     }
 
     .publication-img {
         display: flex;  
         scroll-snap-type: x mandatory;
         overflow-x: auto;
-    }
-
-    .publication-img::-webkit-scrollbar {
-        display: none;
-    }
-
-    .publication-img {
-        -ms-overflow-style: none; 
-        scrollbar-width: none; 
     }
 
     .publication-img div {
@@ -404,11 +404,6 @@
 
     .desc-margin {
         margin-bottom: 20px;
-    }
-
-    .anyComment {
-        margin-top: 10px;
-        font-size: 1.4rem;
     }
 
     /* Form comment */

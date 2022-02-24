@@ -32,7 +32,7 @@
 
 <nav class="navbar">
 	<div class="navbar-content">
-		<img src="images/logo.png" alt="Logo">
+		<a class="a-logo" href="/" on:click={() => changePathname("/")}>FakeInstagram</a>
 		<ul class="navbar-list">
 			<li>
 				<a href="/" on:click={() => changePathname("/")}>
@@ -97,6 +97,13 @@
 		z-index: 10;
 	}
 
+	.a-logo {
+		color: #000;
+		font-size: 3rem;
+		font-family: "Billabong";
+        font-weight: normal;
+	}
+
 	.navbar-content {
 		height: 100%;
 		display: flex;
@@ -152,6 +159,9 @@
 	}
 
 	@media screen and (max-width: 380px) {
+		.a-logo {
+			font-size: 2rem;
+		}
 		.navbar-content img {
 			width: 70px;
 		}

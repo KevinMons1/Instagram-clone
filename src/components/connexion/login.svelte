@@ -15,6 +15,8 @@
 
     $: data.email.length !== "" && data.password.length >= 6 ? disabled = false : disabled = true
 
+    alert("This is a Fake Instagram. Just for improve my skills in SveltJS. Do not share sensitive information (password, personals images, ...). Thanks and good discover 😀")
+
     const redirect = () => {
         dispatch("change-login-page")
     }
@@ -57,7 +59,7 @@
 {/if}
 <div class="connexion-flex connexion">
     <div class="connexion-flex connexion-box">
-        <img src="images/logo.png" alt="Logo">
+        <h1>FakeInstagram</h1>
         <form on:submit|preventDefault={handleSubmit} class="connexion-flex connexion-form">
             <input class={errorNbr === 1 || errorNbr === 3 ? "error-input" : ""} type="email" name="email" bind:value={data.email} placeholder="E-mail">
             <input class={errorNbr === 2 || errorNbr === 3 ? "error-input" : ""} type="password" name="password" bind:value={data.password} placeholder="Password">
@@ -91,9 +93,11 @@
         width: 350px;
     }
 
-    .connexion img {
-        width: 50%;
-        margin-bottom: 50px;
+    h1 {
+        font-family: "Billabong";
+        font-weight: normal;
+        font-size: 4rem;
+        margin-bottom: 20px;
     }
 
     .connexion-form {

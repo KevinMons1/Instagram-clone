@@ -1,6 +1,7 @@
 <script>
     import { goto } from "@sapper/app"
     import { addFollow, deleteFollow } from "../../firebase/user"
+    import { addRoom } from "../../firebase/message"
     
     export let isUser
     export let data
@@ -19,6 +20,11 @@
             if (typeof result === "string") isFollow = result
             else alert("Error from server...")
         }
+    }
+
+    const handleContact = async () => {
+        const roomId = await addRoom(uid, data.uid)
+        goto(`message/${roomId}`)
     }
 </script>
 
@@ -39,7 +45,7 @@
                 </div>
             {:else if isUser === false}
                 <div class="ai-action">
-                    <button>Contact</button>
+                    <button on:click={handleContact}>Contact</button>
                     <button on:click={handleFollow}>{isFollow !== "" ? "✔ Followed" : "Follow"}</button>
                 </div>
             {/if}
